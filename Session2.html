@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C#.NET Control Flow Notes</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; background-color: #f4f7f9; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #2980b9; margin-top: 30px; background: #eef2f7; padding: 10px; border-left: 5px solid #2980b9; }
+        h3 { color: #d35400; }
+        code { background-color: #f0f0f0; padding: 2px 5px; border-radius: 4px; font-family: 'Consolas', monospace; color: #c7254e; }
+        pre { background: #2d3436; color: #dfe6e9; padding: 15px; border-radius: 8px; overflow-x: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .exercise-box { background: #ffffff; border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+        .exercise-title { font-weight: bold; color: #27ae60; }
+        .note { background-color: #fff3cd; border-left: 5px solid #ffecb5; padding: 10px; margin: 15px 0; font-style: italic; }
+        ul { list-style-type: square; }
+    </style>
+</head>
+<body>
+
+    <h1>C#.NET Programming: Control Flow Notes</h1>
+
+    <p>Control flow structures are the "brain" of your code, determining which blocks of code execute based on logic and repetition.</p>
+
+    <h2>1. Conditional Statements</h2>
+    <p>Conditional statements allow the program to make decisions and branch the execution path.</p>
+    
+    
+
+    <h3>Syntax Overview</h3>
+<pre>
+// If-Else-If Ladder
+if (condition) { 
+    // code 
+} else if (otherCondition) { 
+    // code 
+} else { 
+    // code 
+}
+
+// Switch Case
+switch (variable) {
+    case value1: 
+        // code 
+        break;
+    default: 
+        // code 
+        break;
+}</pre>
+
+    <h3>15 Critical Coding Exercises: Conditionals</h3>
+    <div class="exercise-box">
+        <ol>
+            <li><span class="exercise-title">Height Category:</span> Accept height in cm. If &lt; 150 (Dwarf), 150-165 (Average), 165-190 (Tall), &gt;190 (Abnormal).</li>
+            <li><span class="exercise-title">Largest of Three:</span> Take three integers and find the maximum using nested <code>if</code>.</li>
+            <li><span class="exercise-title">Leap Year Checker:</span> Determine if a year is leap (Divisible by 400 OR (Divisible by 4 and NOT 100)).</li>
+            <li><span class="exercise-title">Quadratic Equation:</span> Calculate roots of $ax^2 + bx + c = 0$ using <code>if-else</code> to check the discriminant.</li>
+            <li><span class="exercise-title">Admission Eligibility:</span> Math &ge; 65, Phys &ge; 55, Chem &ge; 50 AND (Total &ge; 180 OR Math+Phys &ge; 140).</li>
+            <li><span class="exercise-title">Electricity Bill:</span> Calculate bill: First 199 units @ 1.20; 200-400 @ 1.50; 400-600 @ 1.80; above 600 @ 2.00. Add 15% surcharge if bill &gt; 400.</li>
+            <li><span class="exercise-title">Vowel or Consonant:</span> Use a <code>switch</code> statement to check if a character is a vowel.</li>
+            <li><span class="exercise-title">Triangle Type:</span> Check if a triangle is Equilateral, Isosceles, or Scalene based on side lengths.</li>
+            <li><span class="exercise-title">Quadrant Finder:</span> Take (x,y) coordinates and print which quadrant they lie in.</li>
+            <li><span class="exercise-title">Grade Description:</span> Input grade (E, V, G, A, F) and print (Excellent, Very Good, Good, Average, Fail) using <code>switch</code>.</li>
+            <li><span class="exercise-title">Valid Date Check:</span> Input day/month/year and check if it's a valid calendar date (handle Feb 29).</li>
+            <li><span class="exercise-title">ATM Withdrawal:</span> Nested <code>if</code> to check: 1. Card inserted, 2. Pin valid, 3. Balance sufficient.</li>
+            <li><span class="exercise-title">Profit/Loss:</span> Calculate profit or loss percentage based on Cost Price and Selling Price.</li>
+            <li><span class="exercise-title">Rock Paper Scissors:</span> Logic for a 2-player game using nested conditionals.</li>
+            <li><span class="exercise-title">Simple Calculator:</span> Use <code>switch</code> to perform +, -, *, / based on user operator input.</li>
+        </ol>
+    </div>
+
+    <h2>2. Loops and Jump Statements</h2>
+    <p>Loops are used to repeat a block of code until a specific condition is met.</p>
+
+    
+
+    <h3>Syntax Overview</h3>
+<pre>
+// For Loop (Known iterations)
+for(int i=0; i&lt;10; i++) { ... }
+
+// While Loop (Condition based)
+while(condition) { ... }
+
+// Do-While (Runs at least once)
+do { ... } while(condition);
+
+// Jump Statements
+break;    // Exit loop
+continue; // Skip current iteration
+goto Label; // Jump to specific line
+</pre>
+
+    <h3>15 Critical Coding Exercises: Loops</h3>
+    <div class="exercise-box">
+        <ol>
+            <li><span class="exercise-title">Fibonacci Series:</span> Display the first N terms of the Fibonacci sequence.</li>
+            <li><span class="exercise-title">Prime Number:</span> Check if a number is prime using a <code>for</code> loop and <code>break</code>.</li>
+            <li><span class="exercise-title">Armstrong Number:</span> Check if a number equals the sum of its digits raised to the power of number of digits.</li>
+            <li><span class="exercise-title">Reverse & Palindrome:</span> Reverse an integer and check if it is a palindrome using <code>while</code>.</li>
+            <li><span class="exercise-title">GCD and LCM:</span> Find the Greatest Common Divisor and Least Common Multiple of two numbers.</li>
+            <li><span class="exercise-title">Pascal's Triangle:</span> Use <strong>Nested Loops</strong> to print Pascal's triangle up to N rows.</li>
+            <li><span class="exercise-title">Binary to Decimal:</span> Convert a binary number string to decimal without using built-in library functions.</li>
+            <li><span class="exercise-title">Diamond Pattern:</span> Print a diamond shape using <code>*</code> characters with nested loops.</li>
+            <li><span class="exercise-title">Factorial (Large numbers):</span> Calculate N! and handle potential overflow for larger integers.</li>
+            <li><span class="exercise-title">Guessing Game:</span> Use <code>do-while</code> to let a user guess a secret number until they get it right.</li>
+            <li><span class="exercise-title">Sum of Digits:</span> Repeatedly sum digits of a number until the result is a single digit (Digital Root).</li>
+            <li><span class="exercise-title">Continue Usage:</span> Print numbers from 1 to 50, but skip all multiples of 3 using <code>continue</code>.</li>
+            <li><span class="exercise-title">Menu System:</span> Use <code>do-while</code> and <code>switch</code> to create a persistent console menu.</li>
+            <li><span class="exercise-title">Strong Number:</span> Check if the sum of the factorial of digits is equal to the number itself.</li>
+            <li><span class="exercise-title">Search with Goto:</span> Implement a deep-nested loop search that uses <code>goto</code> to exit all levels instantly upon finding a result.</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <strong>Pro Tip:</strong> Avoid overusing <code>goto</code> in modern C# development as it can lead to "spaghetti code." Prefer <code>break</code>, <code>return</code>, or <code>throw</code>.
+    </div>
+
+    <p style="text-align: center; margin-top: 50px; color: #7f8c8d;">&copy; 2025 C# Mastery Guide</p>
+</body>
+</html>
