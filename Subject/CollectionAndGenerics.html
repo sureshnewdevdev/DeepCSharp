@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ItTechGenie - Creating and Using Generic Classes (C#)</title>
+<style>
+  :root{
+    --w3-green:#04AA6D; --dark:#1e1e1e; --light:#ffffff; --muted:#666;
+    --box:#f1f1f1; --border:#e3e3e3; --note:#2196F3; --tip:#04AA6D; --warn:#f44336;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#fff;color:#111}
+  .topbar{
+    position:fixed;top:0;left:0;right:0;height:56px;z-index:10;
+    background:var(--w3-green);color:#fff;display:flex;align-items:center;padding:0 16px;
+  }
+  .brand{font-weight:700;letter-spacing:.2px}
+  .brand small{font-weight:500;opacity:.9}
+  .layout{display:flex}
+  .sidebar{
+    position:fixed;top:56px;left:0;bottom:0;width:280px;overflow:auto;
+    border-right:1px solid var(--border);background:#fff;padding:14px 10px;
+  }
+  .sidebar h3{margin:8px 10px;font-size:14px;color:#111}
+  .sidebar a{display:block;padding:8px 10px;border-radius:6px;color:#111;text-decoration:none;font-size:14px}
+  .sidebar a:hover{background:#f7f7f7}
+  .sidebar .group{margin:8px 0 12px}
+  .sidebar .indent{padding-left:22px;font-size:13px;color:#222}
+  .content{
+    margin-left:280px;padding:78px 22px 40px;max-width:1100px;
+  }
+  .hero{
+    border:1px solid var(--border);border-radius:12px;padding:16px 16px 10px;background:#fff;
+  }
+  .toc{border:1px solid var(--border);border-radius:12px;padding:14px;background:#fff;margin-top:14px}
+  .toc ul{margin:8px 0 0 18px}
+  .section{
+    margin-top:18px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;
+  }
+  .section .sh{
+    background:var(--w3-green);color:#fff;padding:10px 14px;font-weight:700;
+  }
+  .section .sb{padding:14px}
+  .note,.tip,.warning{
+    border-left:6px solid; padding:10px 12px; border-radius:10px; background:#f7f7f7; margin:10px 0;
+  }
+  .note{border-color:var(--note)}
+  .tip{border-color:var(--tip)}
+  .warning{border-color:var(--warn)}
+  .exbox{
+    background:var(--box); border:1px solid #ddd; border-radius:12px; padding:12px; margin:12px 0;
+  }
+  pre{
+    background:var(--dark);color:#f3f3f3;padding:12px;border-radius:12px;overflow:auto;margin:10px 0;
+  }
+  code{font-family:Consolas,Menlo,monospace}
+  .trybtn{
+    display:inline-block;background:var(--w3-green);color:#fff;text-decoration:none;
+    padding:8px 12px;border-radius:8px;font-weight:700;margin-top:8px;
+  }
+  .navbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .btn{
+    display:inline-block;background:var(--w3-green);color:#fff;text-decoration:none;
+    padding:9px 12px;border-radius:10px;font-weight:700;
+  }
+  .btn.ghost{background:#e9f7f1;color:#0c5e3f}
+  table{width:100%;border-collapse:collapse;margin:10px 0}
+  th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
+  th{background:#f7f7f7;text-align:left}
+  .muted{color:var(--muted)}
+  details{border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:#fff;margin:10px 0}
+  summary{cursor:pointer;font-weight:700}
+  .small{font-size:13px}
+  /* Anchor offset for fixed topbar */
+  section[id]{scroll-margin-top:74px}
+
+  /* Tooltip */
+  .tt{position:relative; border-bottom:1px dotted #333; cursor:help}
+  .tt::after{
+    content:attr(data-tip);
+    position:absolute; left:0; top:120%;
+    min-width:260px; max-width:360px;
+    background:#111; color:#fff; padding:10px 10px; border-radius:10px;
+    font-size:12.5px; line-height:1.35;
+    opacity:0; pointer-events:none; transform:translateY(6px);
+    transition:.15s ease;
+    white-space:pre-line;
+    z-index:99;
+  }
+  .tt:hover::after{opacity:1; transform:translateY(0)}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">ItTechGenie <small>• W3Schools-Style C# Notes</small></div>
+  </div>
+
+  <!-- Placeholder anchors required -->
+  <div id="prev-subtopic"></div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h3>Creating & Using Generic Classes</h3>
+
+      <a href="#intro">Introduction</a>
+      <a href="#toc">Table of Contents</a>
+
+      <div class="group">
+        <a href="#generic-classes">Generic Classes</a>
+        <a class="indent" href="#why-generics">Why Generics?</a>
+        <a class="indent" href="#create-generic-class">Create a Generic Class (T)</a>
+        <a class="indent" href="#multi-type-params">Multiple Type Parameters</a>
+        <a class="indent" href="#generic-constraints">Generic Constraints</a>
+        <a class="indent" href="#generic-best-practices">Generic Best Practices</a>
+      </div>
+
+      <a href="#best-practices">Best Practices</a>
+      <a href="#steps">Step-by-Step</a>
+      <a href="#project">Mini Project</a>
+      <a href="#faq">FAQs</a>
+      <a href="#interview">Interview Questions</a>
+      <a href="#summary">Summary</a>
+      <a href="#quiz">MCQ Quiz</a>
+      <a href="#downloads">Downloads</a>
+
+      <!-- REQUIRED SIDEBAR MENU ADDITION -->
+      <a href="#practice-coding-questions"><b>To Become Best coder Practice this</b></a>
+    </aside>
+
+    <main class="content">
+      <div class="hero" id="intro">
+        <h1>Creating and Using <span class="tt" data-tip="Generics let you write type-safe code that works with many data types.&#10;Instead of duplicating classes for int/string/etc., you reuse one template.&#10;The compiler checks types, reducing runtime casting bugs.">Generic</span> Classes in C#</h1>
+        <p class="muted">
+          In C#, <span class="tt" data-tip="A type parameter is a placeholder type like T or TKey.&#10;When you use the class, you replace it with a real type like int or string.&#10;This is checked at compile time for safety.">type parameters</span> help you build reusable, strongly-typed components.
+          This page explains <b>generic classes</b>, constraints, and real-world patterns (like repositories).
+        </p>
+        <div class="note">
+          <b>Note:</b> Generics are verified at <span class="tt" data-tip="Compile-time means errors are found while building the program.&#10;This is safer than discovering issues while the app is running.&#10;C# uses compile-time checks heavily for generics.">compile-time</span> (before running).
+        </div>
+      </div>
+
+      <div class="toc" id="toc">
+        <h2>Table of Contents</h2>
+        <ul>
+          <li><a href="#why-generics">Why Generics?</a></li>
+          <li><a href="#create-generic-class">Create a Generic Class (T)</a></li>
+          <li><a href="#multi-type-params">Multiple Type Parameters</a></li>
+          <li><a href="#generic-constraints">Generic Constraints</a></li>
+          <li><a href="#generic-best-practices">Generic Best Practices</a></li>
+          <li><a href="#practice-coding-questions">To Become Best coder Practice this</a></li>
+        </ul>
+      </div>
+
+      <div class="section" id="generic-classes">
+        <div class="sh">Generic Classes</div>
+        <div class="sb small">
+          Generic classes are “templates” for classes. You define them once, and use them with many types.
+          They reduce repeated code, remove risky casting, and keep APIs consistent.
+          Generics are supported by the <span class="tt" data-tip="CLR (Common Language Runtime) is the .NET runtime that executes your code.&#10;It provides memory management (GC), type safety, and exception handling.&#10;Generics are implemented efficiently by the CLR.">CLR</span>, so they are fast and safe.
+        </div>
+      </div>
+
+      <!-- 1 -->
+      <section class="section" id="why-generics">
+        <div class="sh">Why Generics?</div>
+        <div class="sb">
+          <p>
+            Without generics, you often store values as <b>object</b> and then cast them back—this is error-prone.
+            With <span class="tt" data-tip="Type safety means the compiler ensures you use correct types.&#10;You avoid invalid casts (like treating a string as an int).&#10;This reduces runtime crashes and improves readability.">type safety</span>, your code becomes cleaner and easier to maintain.
+            Generics also improve reusability: one class works for many types.
+          </p>
+
+          <div class="exbox">
+            <b>ASCII Flow (Why Generics)</b>
+            <pre><code>Without Generics:         With Generics:
+object box = 10;          Box&lt;int&gt; box = new Box&lt;int&gt;(10);
+(int)box  ✅/❌            box.Value (int) ✅ always safe</code></pre>
+            <a class="trybtn" href="#tryit">Try It Yourself</a>
+          </div>
+
+          <pre><code>// Non-generic example (risk of casting bugs)
+object value = "10";
+// int n = (int)value; // ❌ InvalidCastException at runtime
+
+// Generic idea: Value is always the right type
+class Box&lt;T&gt; { public T Value; public Box(T v){ Value = v; } }</code></pre>
+
+          <p><b>Real-world use case:</b> A reusable “Result&lt;T&gt;” wrapper for API responses (Success + Data + ErrorMessage).</p>
+          <div class="tip"><b>Beginner Tip:</b> Start with one type parameter: <b>T</b>. Keep it simple.</div>
+          <div class="note"><b>Advanced Note:</b> Generics reduce boxing/unboxing and avoid runtime casts in many scenarios.</div>
+
+          <div class="navbtns">
+            <a class="btn" href="#prev-subtopic">❮ Previous</a>
+            <a class="btn" href="#create-generic-class">Next ❯</a>
+            <a class="btn ghost" href="#next-subtopic">#next-subtopic</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2 -->
+      <section class="section" id="create-generic-class">
+        <div class="sh">Create a Generic Class (T)</div>
+        <div class="sb">
+          <p>
+            A generic class declares a type parameter like <b>T</b>.
+            When you create an instance, you “fill in” the real type: <b>Box&lt;int&gt;</b>, <b>Box&lt;string&gt;</b>, etc.
+            The compiler enforces correct usage, so you don’t need manual casting.
+          </p>
+
+          <div class="exbox">
+            <b>ASCII Diagram (Generic Class Template)</b>
+            <pre><code>Box&lt;T&gt;  (template)
+   |
+   +-- Box&lt;int&gt;    Value: int
+   +-- Box&lt;string&gt; Value: string</code></pre>
+          </div>
+
+          <pre><code>public class Box&lt;T&gt;
+{
+    public T Value { get; }
+
+    public Box(T value)
+    {
+        Value = value;
+    }
+}
+
+// Usage
+var intBox = new Box&lt;int&gt;(99);
+var strBox = new Box&lt;string&gt;("Hello");</code></pre>
+
+          <p><b>Real-world use case:</b> A <b>Cache&lt;T&gt;</b> that stores typed objects and returns them safely.</p>
+          <div class="tip"><b>Beginner Tip:</b> Name type parameters clearly: TKey, TValue, TItem.</div>
+          <div class="note"><b>Advanced Note:</b> Prefer immutability (read-only properties) for safer generic containers.</div>
+
+          <div class="navbtns">
+            <a class="btn" href="#why-generics">❮ Previous</a>
+            <a class="btn" href="#multi-type-params">Next ❯</a>
+            <a class="btn ghost" href="#prev-subtopic">#prev-subtopic</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section class="section" id="multi-type-params">
+        <div class="sh">Multiple Type Parameters (TKey, TValue)</div>
+        <div class="sb">
+          <p>
+            Some designs need more than one type parameter.
+            Example: a key-value pair uses <b>TKey</b> for the key and <b>TValue</b> for the value.
+            This is common in dictionaries, caches, and repositories.
+          </p>
+
+          <div class="exbox">
+            <b>ASCII Diagram (Key → Value)</b>
+            <pre><code>TKey ----&gt; TValue
+"IN-1001" ----&gt; Invoice
+101        ----&gt; Customer</code></pre>
+          </div>
+
+          <pre><code>public class KeyValueStore&lt;TKey, TValue&gt;
+{
+    private readonly Dictionary&lt;TKey, TValue&gt; _data = new();
+
+    public void Add(TKey key, TValue value) =&gt; _data[key] = value;
+    public TValue Get(TKey key) =&gt; _data[key];
+}
+
+// Usage
+var store = new KeyValueStore&lt;string, int&gt;();
+store.Add("Apples", 5);</code></pre>
+
+          <p><b>Real-world use case:</b> ProductCode (string) → StockCount (int) mapping in inventory.</p>
+          <div class="tip"><b>Beginner Tip:</b> Keep APIs minimal: Add(), Get(), TryGet().</div>
+          <div class="note"><b>Advanced Note:</b> Consider <b>TryGet</b> to avoid exceptions for missing keys.</div>
+
+          <div class="navbtns">
+            <a class="btn" href="#create-generic-class">❮ Previous</a>
+            <a class="btn" href="#generic-constraints">Next ❯</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 -->
+      <section class="section" id="generic-constraints">
+        <div class="sh">Generic Constraints (where T : ...)</div>
+        <div class="sb">
+          <p>
+            Constraints restrict what types can replace <b>T</b>.
+            This lets you safely use members like parameterless constructors or base-class methods.
+            Constraints improve correctness and developer experience.
+          </p>
+
+          <div class="exbox">
+            <b>ASCII Cheat Sheet</b>
+            <pre><code>where T : class      // reference types only
+where T : struct     // value types only
+where T : new()      // must have parameterless ctor
+where T : BaseType   // must inherit BaseType</code></pre>
+          </div>
+
+          <pre><code>public class Factory&lt;T&gt; where T : new()
+{
+    public T Create() =&gt; new T();
+}
+
+public class Customer
+{
+    public Customer() { }
+}
+
+var f = new Factory&lt;Customer&gt;();
+Customer c = f.Create();</code></pre>
+
+          <p><b>Real-world use case:</b> A factory that creates typed DTO objects in a mapping
