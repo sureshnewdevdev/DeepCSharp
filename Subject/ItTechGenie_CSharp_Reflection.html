@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ItTechGenie • C# Reflection (W3-Style Notes)</title>
+  <style>
+    :root{
+      --brand:#04AA6D;
+      --brand-dark:#037a4f;
+      --bg:#ffffff;
+      --text:#1f2328;
+      --muted:#6b7280;
+      --codebg:#f6f8fa;
+      --border:#e5e7eb;
+      --shadow:0 6px 20px rgba(0,0,0,.08);
+      --note:#e7f6ef;
+      --warn:#fff7ed;
+      --danger:#ffecec;
+      --sidebar:#f8fafc;
+      --link:#0b5fff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      color:var(--text);
+      background:var(--bg);
+      line-height:1.55;
+    }
+    a{color:var(--link); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      background:var(--brand);
+      color:#fff;
+      padding:10px 16px;
+      display:flex; align-items:center; gap:12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.12);
+    }
+    .logo{
+      display:flex; align-items:center; gap:10px;
+      font-weight:800; letter-spacing:.2px;
+      white-space:nowrap;
+    }
+    .logo-badge{
+      width:30px; height:30px; border-radius:8px;
+      background:#fff; color:var(--brand);
+      display:grid; place-items:center;
+      font-weight:900;
+    }
+    .topbar .search{
+      margin-left:auto;
+      display:flex; align-items:center; gap:8px;
+      background:rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.25);
+      padding:6px 10px; border-radius:999px;
+      min-width:280px;
+    }
+    .topbar input{
+      width:100%;
+      border:none; outline:none;
+      background:transparent;
+      color:#fff;
+      font-size:14px;
+    }
+    .topbar input::placeholder{color:rgba(255,255,255,.85)}
+    .layout{
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      min-height: calc(100vh - 54px);
+    }
+    .sidebar{
+      border-right:1px solid var(--border);
+      background:var(--sidebar);
+      padding:14px 10px 18px;
+      overflow:auto;
+      position:sticky;
+      top:54px;
+      height: calc(100vh - 54px);
+    }
+    .sidebar h3{
+      margin:10px 10px 6px;
+      font-size:14px;
+      color:#111827;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .nav a{
+      display:block;
+      padding:9px 10px;
+      margin:4px 6px;
+      border-radius:10px;
+      color:#0f172a;
+    }
+    .nav a:hover{background:#eaf7f1}
+    .nav a.active{
+      background:#dff3ea;
+      border:1px solid #bfe8d6;
+      font-weight:700;
+    }
+    .content{
+      padding:22px 18px 60px;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    h1{font-size:34px; margin:6px 0 8px}
+    h2{font-size:26px; margin:28px 0 10px}
+    h3{font-size:20px; margin:22px 0 10px}
+    p{margin:10px 0}
+    .lead{font-size:16px; color:#0f172a}
+    .muted{color:var(--muted)}
+    .pillbar{
+      display:flex; flex-wrap:wrap;
+      gap:8px;
+      margin:10px 0 18px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size:13px;
+      color:#111827;
+    }
+    .grid-2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+    @media(max-width: 980px){
+      .layout{grid-template-columns: 1fr}
+      .sidebar{position:relative; top:0; height:auto}
+      .topbar .search{display:none}
+      .grid-2{grid-template-columns: 1fr}
+    }
+
+    .card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px 14px;
+      box-shadow: var(--shadow);
+    }
+    .callout{
+      border-radius:16px;
+      padding:14px 14px;
+      border:1px solid var(--border);
+      background: var(--note);
+    }
+    .callout.warn{background:var(--warn)}
+    .callout.danger{background:var(--danger)}
+    .callout-title{
+      font-weight:800;
+      margin-bottom:6px;
+    }
+    .example{
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
+      margin:14px 0;
+      box-shadow: var(--shadow);
+    }
+    .example .head{
+      padding:10px 12px;
+      background:#eef6f2;
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+    }
+    .example .head strong{font-size:14px}
+    .example .body{padding:12px}
+    pre{
+      margin:0;
+      background:var(--codebg);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px;
+      overflow:auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:13px;
+      line-height:1.5;
+    }
+    code{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:12px;
+      border:1px solid #bfe8d6;
+      background:#dff3ea;
+      color:#0b3d2b;
+      font-weight:700;
+      cursor:pointer;
+      user-select:none;
+    }
+    .btn:hover{background:#cfeee2}
+    .btn.secondary{
+      background:#fff;
+      border:1px solid var(--border);
+      color:#111827;
+    }
+    .btn.secondary:hover{background:#f3f4f6}
+    .inline-btns{display:flex; flex-wrap:wrap; gap:10px; margin: 14px 0}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow: var(--shadow);
+      margin: 12px 0;
+    }
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid var(--border);
+      text-align:left;
+      vertical-align:top;
+      font-size:14px;
+    }
+    th{
+      background:#f3f6f4;
+      font-weight:800;
+    }
+    tr:last-child td{border-bottom:none}
+    .footer{
+      margin-top:38px;
+      padding-top:18px;
+      border-top:1px solid var(--border);
+      color:var(--muted);
+      font-size:13px;
+    }
+    .toc{
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px 14px;
+      background:#fff;
+      box-shadow: var(--shadow);
+      margin: 14px 0;
+    }
+    .toc ul{margin:8px 0 0; padding-left:18px}
+    .kbd{
+      padding:2px 6px;
+      border:1px solid var(--border);
+      border-bottom-width:2px;
+      border-radius:8px;
+      background:#fff;
+      font-family: ui-monospace, monospace;
+      font-size:12px;
+    }
+    .badge{
+      display:inline-block;
+      padding:3px 8px;
+      border-radius:999px;
+      background:#eef2ff;
+      border:1px solid #dbeafe;
+      color:#1e3a8a;
+      font-size:12px;
+      font-weight:700;
+    }
+    .small{font-size:13px}
+    .hr{height:1px; background:var(--border); margin:16px 0}
+    details{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:16px;
+      padding:10px 12px;
+      box-shadow: var(--shadow);
+      margin:12px 0;
+    }
+    summary{
+      cursor:pointer;
+      font-weight:800;
+    }
+    .quiz label{display:block; margin:8px 0}
+    .quiz input{margin-right:8px}
+    .quiz .result{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#f8fafc;
+      font-weight:700;
+    }
+    .highlight{
+      background: #fff2cc;
+      padding:1px 4px;
+      border-radius:6px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="logo">
+      <span class="logo-badge">IT</span>
+      <span>ItTechGenie • C# Reflection</span>
+    </div>
+
+    <div class="search" title="Search in this page (press Ctrl+F for browser search too)">
+      <span class="kbd">Ctrl</span> + <span class="kbd">F</span>
+      <input id="searchBox" placeholder="Quick jump: type a section name like 'Attributes'…" />
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <nav class="nav" id="sideNav">
+        <a href="#intro" class="active">Reflection Introduction</a>
+        <a href="#when-to-use">When to Use Reflection</a>
+        <a href="#core-types">Core Types (Type, MemberInfo)</a>
+        <a href="#get-type">Getting a Type</a>
+        <a href="#members">Reading Members</a>
+        <a href="#bindingflags">BindingFlags Deep Dive</a>
+        <a href="#create-instance">Create Objects Dynamically</a>
+        <a href="#invoke">Invoke Methods Dynamically</a>
+        <a href="#props-fields">Get/Set Properties & Fields</a>
+        <a href="#constructors">Constructors & Parameters</a>
+        <a href="#generics">Reflection + Generics</a>
+        <a href="#attributes">Custom Attributes</a>
+        <a href="#assemblies">Assemblies & Scanning</a>
+        <a href="#plugins">Plugin Architecture Example</a>
+        <a href="#di">Mini Dependency Injection Example</a>
+        <a href="#serialization">Mini JSON-like Serializer</a>
+        <a href="#exceptions">Common Errors & Fixes</a>
+        <a href="#performance">Performance & Safety</a>
+        <a href="#alternatives">Alternatives to Reflection</a>
+        <a href="#best-practices">Best Practices Checklist</a>
+        <a href="#faq">FAQ</a>
+        <a href="#practice">Practice Tasks</a>
+        <a href="#quiz">Quick Quiz</a>
+      </nav>
+
+      <div class="hr"></div>
+      <div class="small muted" style="padding:0 10px;">
+        <p><span class="badge">Tip</span> Use the sidebar to jump between sections.</p>
+        <p class="muted">This page is self‑contained (no external CSS/JS).</p>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+      <header>
+        <h1 id="intro">C# Reflection</h1>
+        <p class="lead">
+          <b>Reflection</b> is a feature in .NET that lets your code <b>inspect</b> (and sometimes <b>act on</b>) types at runtime:
+          classes, methods, properties, attributes, assemblies, and more.
+        </p>
+
+        <div class="pillbar">
+          <span class="pill">Namespace: <code>System.Reflection</code></span>
+          <span class="pill">Main object: <code>Type</code></span>
+          <span class="pill">Works at runtime (dynamic)</span>
+          <span class="pill">Great for tools/frameworks</span>
+          <span class="pill">Use carefully for performance</span>
+        </div>
+
+        <div class="toc">
+          <b>What you will learn</b>
+          <ul>
+            <li>How to get <code>Type</code> and discover members (methods, properties, fields)</li>
+            <li>How to create objects and invoke methods dynamically</li>
+            <li>How to read/write members using <code>BindingFlags</code></li>
+            <li>How attributes work (create your own + read them at runtime)</li>
+            <li>How to scan assemblies for classes (plugins, DI)</li>
+            <li>Performance tips and safe best practices</li>
+          </ul>
+        </div>
+
+        <div class="inline-btns">
+          <a class="btn" href="#get-type">Start: Getting a Type</a>
+          <a class="btn secondary" href="#quiz">Jump to Quiz</a>
+          <a class="btn secondary" href="#practice">Jump to Practice Tasks</a>
+        </div>
+      </header>
+
+      <section id="when-to-use">
+        <h2>When to Use Reflection</h2>
+        <p>
+          Reflection is powerful because it allows your program to work with types that you do not know at compile time.
+          This is common in frameworks and tooling.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Use case</th>
+              <th>Real‑world examples</th>
+              <th>Why reflection helps</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Frameworks / Libraries</td>
+              <td>Dependency injection, ORMs, MVC routing, test frameworks</td>
+              <td>Discover classes/methods automatically without hardcoding names</td>
+            </tr>
+            <tr>
+              <td>Plugin systems</td>
+              <td>Load new modules (DLLs) without changing the main app</td>
+              <td>Scan assemblies and create instances dynamically</td>
+            </tr>
+            <tr>
+              <td>Metadata-driven behavior</td>
+              <td>Validation attributes, mapping attributes, custom rules</td>
+              <td>Attributes describe rules; reflection reads them</td>
+            </tr>
+            <tr>
+              <td>Tools & Diagnostics</td>
+              <td>Object dumpers, debuggers, loggers</td>
+              <td>Print type details and values automatically</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout warn">
+          <div class="callout-title">Important</div>
+          <p>
+            Reflection can be slower than direct code and can bypass normal access rules (private members).
+            Use it <b>only when you need runtime discovery</b>, and cache results when possible.
+          </p>
+        </div>
+      </section>
+
+      <section id="core-types">
+        <h2>Core Reflection Types</h2>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3 style="margin-top:0;">Type</h3>
+            <p>
+              <code>Type</code> represents information about a type (class/struct/interface/enum).
+              Most reflection starts with a <code>Type</code> object.
+            </p>
+            <ul>
+              <li>Type name: <code>type.Name</code>, <code>type.FullName</code></li>
+              <li>Base class: <code>type.BaseType</code></li>
+              <li>Interfaces: <code>type.GetInterfaces()</code></li>
+              <li>Members: <code>type.GetMethods()</code>, <code>type.GetProperties()</code>…</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-top:0;">MemberInfo (MethodInfo, PropertyInfo, …)</h3>
+            <p>
+              Once you have a <code>Type</code>, you can ask for members. Each member is represented by a
+              <code>MemberInfo</code> subclass:
+            </p>
+            <ul>
+              <li><code>MethodInfo</code> → methods</li>
+              <li><code>PropertyInfo</code> → properties</li>
+              <li><code>FieldInfo</code> → fields</li>
+              <li><code>ConstructorInfo</code> → constructors</li>
+              <li><code>EventInfo</code> → events</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="head"><strong>Example: A simple class we will reflect on</strong></div>
+          <div class="body">
+<pre><code>using System;
+
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public decimal Salary { get; private set; }
+
+    private string secretCode = "X9Z";
+
+    public Employee() { }
+
+    public Employee(int id, string name, decimal salary)
+    {
+        Id = id;
+        Name = name;
+        Salary = salary;
+    }
+
+    public void GiveRaise(decimal amount)
+    {
+        Salary += amount;
+    }
+
+    private string GetSecretCode() =&gt; secretCode;
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="get-type">
+        <h2>Getting a Type</h2>
+        <p>There are multiple ways to get a <code>Type</code> in C#.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Approach</th>
+              <th>When to use</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>typeof(T)</code></td>
+              <td>You know the type at compile time</td>
+              <td><code>Type t = typeof(Employee);</code></td>
+            </tr>
+            <tr>
+              <td><code>obj.GetType()</code></td>
+              <td>You have an object instance</td>
+              <td><code>Type t = emp.GetType();</code></td>
+            </tr>
+            <tr>
+              <td><code>Type.GetType("...")</code></td>
+              <td>You have a type name (string)</td>
+              <td><code>Type? t = Type.GetType("MyApp.Employee");</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="example">
+          <div class="head">
+            <strong>Example: typeof vs GetType()</strong>
+            <span class="muted">Console App</span>
+          </div>
+          <div class="body">
+<pre><code>using System;
+
+class Program
+{
+    static void Main()
+    {
+        Employee emp = new Employee(101, "Arun", 45000);
+
+        Type t1 = typeof(Employee);     // compile-time
+        Type t2 = emp.GetType();        // runtime
+
+        Console.WriteLine(t1.FullName);
+        Console.WriteLine(t2.FullName);
+        Console.WriteLine(t1 == t2);    // True
+    }
+}</code></pre>
+
+            <p class="muted small"><b>Output (sample):</b> It prints the full type name and <code>True</code>.</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <div class="callout-title">Note: Type.GetType needs the correct name</div>
+          <p>
+            <code>Type.GetType("Employee")</code> might return <code>null</code> unless the type is in the current assembly
+            namespace or you provide an assembly-qualified name.
+          </p>
+        </div>
+      </section>
+
+      <section id="members">
+        <h2>Reading Members (Methods, Properties, Fields)</h2>
+
+        <div class="example">
+          <div class="head"><strong>Example: List all public methods</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Linq;
+using System.Reflection;
+
+class Program
+{
+    static void Main()
+    {
+        Type t = typeof(Employee);
+
+        var methods = t.GetMethods(); // public instance + inherited public methods
+
+        foreach (var m in methods)
+        {
+            Console.WriteLine($"{m.ReturnType.Name} {m.Name}()");
+        }
+    }
+}</code></pre>
+            <p class="muted small">
+              By default, <code>GetMethods()</code> includes inherited public methods (like <code>ToString()</code>).
+              Use <code>BindingFlags</code> to fine-tune.
+            </p>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="head"><strong>Example: List properties and their types</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Reflection;
+
+class Program
+{
+    static void Main()
+    {
+        Type t = typeof(Employee);
+
+        foreach (PropertyInfo p in t.GetProperties())
+        {
+            Console.WriteLine($"{p.PropertyType.Name} {p.Name} (CanRead={p.CanRead}, CanWrite={p.CanWrite})");
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="head"><strong>Example: List fields (public only by default)</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Reflection;
+
+class Program
+{
+    static void Main()
+    {
+        Type t = typeof(Employee);
+
+        foreach (FieldInfo f in t.GetFields())
+        {
+            Console.WriteLine($"{f.FieldType.Name} {f.Name}");
+        }
+    }
+}</code></pre>
+
+            <p class="muted small">
+              You will not see <code>secretCode</code> here because it is <b>private</b>. Next section shows how.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="bindingflags">
+        <h2>BindingFlags Deep Dive</h2>
+        <p>
+          <code>BindingFlags</code> tells reflection which members you want: public/private, static/instance, declared only, etc.
+          This is one of the most important reflection concepts.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Flag</th>
+              <th>Meaning</th>
+              <th>Why it matters</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Public</code></td>
+              <td>Include public members</td>
+              <td>Default for many APIs</td>
+            </tr>
+            <tr>
+              <td><code>NonPublic</code></td>
+              <td>Include private/protected/internal members</td>
+              <td>Needed to access private fields/methods</td>
+            </tr>
+            <tr>
+              <td><code>Instance</code></td>
+              <td>Include instance members</td>
+              <td>Most class members are instance</td>
+            </tr>
+            <tr>
+              <td><code>Static</code></td>
+              <td>Include static members</td>
+              <td>Needed for static methods/properties</td>
+            </tr>
+            <tr>
+              <td><code>DeclaredOnly</code></td>
+              <td>Only members declared on that type (exclude inherited)</td>
+              <td>Cleaner lists</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="example">
+          <div class="head"><strong>Example: Get private field using BindingFlags</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Reflection;
+
+class Program
+{
+    static void Main()
+    {
+        Employee emp = new Employee(101, "Arun", 45000);
+
+        Type t = typeof(Employee);
+
+        // private instance field "secretCode"
+        FieldInfo? f = t.GetField("secretCode", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        if (f == null)
+        {
+            Console.WriteLine("Field not found");
+            return;
+        }
+
+        object? value = f.GetValue(emp);
+        Console.WriteLine("Secret Code = " + value);
+    }
+}</code></pre>
+            <div class="callout danger">
+              <div class="callout-title">Warning: private access</div>
+              <p>
+                Accessing private members can break encapsulation and may fail in restricted environments.
+                Use this only for diagnostics/tools or controlled frameworks.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="create-instance">
+        <h2>Create Objects Dynamically</h2>
+        <p>
+          Sometimes you only know the class name at runtime (plugins, configs, user selection).
+          You can create instances using <code>Activator.CreateInstance</code>.
+        </p>
+
+        <div class="example">
+          <div class="head"><strong>Example: Create instance with parameterless constructor</strong></div>
+          <div class="body">
+<pre><code>using System;
+
+class Program
+{
+    static void Main()
+    {
+        Type t = typeof(Employee);
+
+        object? obj = Activator.CreateInstance(t);
+
+        Employee emp = (Employee)obj!;
+        emp.Id = 201;
+        emp.Name = "Divya";
+
+        Console.WriteLine($"{emp.Id} - {emp.Name}");
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="head"><strong>Example: Create instance using constructor parameters</strong></div>
+          <div class="body">
+<pre><code>using System;
+
+class Program
+{
+    static void Main()
+    {
+        Type t = typeof(Employee);
+
+        object? obj = Activator.CreateInstance(t, 301, "Mubeen", 55000m);
+
+        Employee emp = (Employee)obj!;
+        Console.WriteLine($"{emp.Id} - {emp.Name} - {emp.Salary}");
+    }
+}</code></pre>
+
+            <p class="muted small">
+              If no matching constructor exists, you will get <code>MissingMethodException</code>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="invoke">
+        <h2>Invoke Methods Dynamically</h2>
+        <p>
+          After you find a method using reflection, you can invoke it using <code>MethodInfo.Invoke</code>.
+        </p>
+
+        <div class="example">
+          <div class="head"><strong>Example: Call public method GiveRaise()</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Reflection;
+
+class Program
+{
+    static void Main()
+    {
+        Employee emp = new Employee(101, "Arun", 45000m);
+
+        Type t = emp.GetType();
+        MethodInfo? m = t.GetMethod("GiveRaise");
+
+        m!.Invoke(emp, new object[] { 5000m });
+
+        Console.WriteLine(emp.Salary); // 50000
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="head"><strong>Example: Call private method GetSecretCode()</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Reflection;
+
+class Program
+{
+    static void Main()
+    {
+        Employee emp = new Employee(101, "Arun", 45000m);
+
+        Type t = typeof(Employee);
+
+        MethodInfo? m = t.GetMethod("GetSecretCode",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+
+        object? result = m!.Invoke(emp, null);
+
+        Console.WriteLine("Private method result = " + result);
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <div class="callout-title">Note: parameters are object[]</div>
+          <p>
+            <code>Invoke</code> always takes <code>object?[]?</code> parameters.
+            Value types (like <code>int</code>, <code>decimal</code>) are boxed into objects.
+          </p>
+        </div>
+      </section>
+
+      <section id="props-fields">
+        <h2>Get/Set Properties & Fields</h2>
+        <p>
+          You can read or write values of properties and fields using <code>PropertyInfo</code> and <code>FieldInfo</code>.
+        </p>
+
+        <div class="example">
+          <div class="head"><strong>Example: Set and Get public property (Name)</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Reflection;
+
+class Program
+{
+    static void Main()
+    {
+        Employee emp = new Employee();
+
+        Type t = typeof(Employee);
+        PropertyInfo? p = t.GetProperty("Name");
+
+        p!.SetValue(emp, "Anita");
+        Console.WriteLine(p.GetValue(emp)); // Anita
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="head"><strong>Example: Read Salary (private setter)</strong></div>
+          <div class="body">
+<pre><code>using System;
+
+class Program
+{
+    static void Main()
+    {
+        var emp = new Employee(101, "Arun", 45000m);
+
+        var p = typeof(Employee).GetProperty("Salary");
+        Console.WriteLine(p!.GetValue(emp)); // 45000
+    }
+}</code></pre>
+
+            <div class="callout">
+              <div class="callout-title">Tip</div>
+              <p>
+                A property with a private setter can still be <b>read</b> using reflection.
+                Writing may require accessing the underlying setter method with non-public flags.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="head"><strong>Example: Set a private field using reflection</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Reflection;
+
+class Program
+{
+    static void Main()
+    {
+        var emp = new Employee(101, "Arun", 45000m);
+
+        var f = typeof(Employee).GetField("secretCode",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+
+        f!.SetValue(emp, "NEW-SECRET");
+
+        // verify by calling private method (for demo)
+        var m = typeof(Employee).GetMethod("GetSecretCode",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+
+        Console.WriteLine(m!.Invoke(emp, null)); // NEW-SECRET
+    }
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="constructors">
+        <h2>Constructors & Parameters</h2>
+        <p>
+          Use <code>GetConstructors()</code> to list constructors and understand their parameter list.
+          This is used heavily in DI containers.
+        </p>
+
+        <div class="example">
+          <div class="head"><strong>Example: Print constructors and parameter info</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Reflection;
+
+class Program
+{
+    static void Main()
+    {
+        Type t = typeof(Employee);
+
+        foreach (ConstructorInfo c in t.GetConstructors())
+        {
+            Console.WriteLine("Constructor:");
+            foreach (var p in c.GetParameters())
+            {
+                Console.WriteLine($" - {p.ParameterType.Name} {p.Name}");
+            }
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <details>
+          <summary>Extra: Choose a “best” constructor (DI style)</summary>
+          <p class="muted">
+            Many DI containers select the constructor with the most parameters (or based on attributes).
+            Reflection is used to read those parameters and resolve dependencies.
+          </p>
+<pre><code>// Concept (not full DI):
+// 1) Find constructor with most parameters
+// 2) Resolve each parameter type
+// 3) Invoke constructor with resolved objects</code></pre>
+        </details>
+      </section>
+
+      <section id="generics">
+        <h2>Reflection + Generics</h2>
+        <p>
+          Reflection becomes more interesting with generics: open generic types, closed generic types, generic methods, etc.
+        </p>
+
+        <div class="example">
+          <div class="head"><strong>Example: Check if a type is generic</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Collections.Generic;
+
+class Program
+{
+    static void Main()
+    {
+        Type t1 = typeof(List&lt;int&gt;);
+        Type t2 = typeof(List&lt;&gt;); // open generic type definition
+
+        Console.WriteLine(t1.IsGenericType);                 // True
+        Console.WriteLine(t2.IsGenericTypeDefinition);       // True
+        Console.WriteLine(t1.GetGenericTypeDefinition());    // System.Collections.Generic.List`1
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="head"><strong>Example: Build List&lt;T&gt; at runtime</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Collections;
+using System.Collections.Generic;
+
+class Program
+{
+    static void Main()
+    {
+        // Suppose we decided at runtime that we want List&lt;string&gt;:
+        Type openList = typeof(List&lt;&gt;);
+        Type closedList = openList.MakeGenericType(typeof(string));
+
+        object listObj = Activator.CreateInstance(closedList)!;
+
+        // Use IList to add without knowing T at compile time
+        IList list = (IList)listObj;
+        list.Add("Chennai");
+        list.Add("Bengaluru");
+
+        Console.WriteLine(list[0]); // Chennai
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="head"><strong>Example: Invoke a generic method at runtime</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Reflection;
+
+public class Utils
+{
+    public T Echo&lt;T&gt;(T value) =&gt; value;
+}
+
+class Program
+{
+    static void Main()
+    {
+        var u = new Utils();
+
+        MethodInfo open = typeof(Utils).GetMethod("Echo")!;
+        MethodInfo closed = open.MakeGenericMethod(typeof(int));
+
+        object result = closed.Invoke(u, new object[] { 123 })!;
+        Console.WriteLine(result); // 123
+    }
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="attributes">
+        <h2>Custom Attributes</h2>
+        <p>
+          <b>Attributes</b> are metadata added to code. Reflection reads them at runtime to enable rules or behavior.
+          Examples: <code>[Obsolete]</code>, <code>[Serializable]</code>, ASP.NET Core attributes, validation attributes, etc.
+        </p>
+
+        <div class="example">
+          <div class="head"><strong>Example: Create a custom attribute</strong></div>
+          <div class="body">
+<pre><code>using System;
+
+[AttributeUsage(AttributeTargets.Property)]
+public class RequiredAttribute : Attribute
+{
+    public string Message { get; }
+    public RequiredAttribute(string message = "Value required")
+    {
+        Message = message;
+    }
+}
+
+public class Student
+{
+    [Required("Student Name is mandatory")]
+    public string Name { get; set; } = "";
+
+    public int Age { get; set; }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="head"><strong>Example: Read attributes and validate an object</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Linq;
+using System.Reflection;
+
+public static class Validator
+{
+    public static void Validate(object obj)
+    {
+        Type t = obj.GetType();
+
+        foreach (var prop in t.GetProperties())
+        {
+            var attr = prop.GetCustomAttribute&lt;RequiredAttribute&gt;();
+            if (attr == null) continue;
+
+            object? value = prop.GetValue(obj);
+
+            if (value == null || (value is string s &amp;&amp; string.IsNullOrWhiteSpace(s)))
+            {
+                throw new Exception(attr.Message + $" (Property: {prop.Name})");
+            }
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        var s1 = new Student { Name = "", Age = 20 };
+
+        try
+        {
+            Validator.Validate(s1);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+}</code></pre>
+
+            <p class="muted small">
+              This pattern is used in many frameworks: metadata (attributes) + reflection = rules.
+            </p>
+          </div>
+        </div>
+
+        <details>
+          <summary>Extra: Get all attributes (not just one)</summary>
+<pre><code>// var attrs = prop.GetCustomAttributes(true);</code></pre>
+          <p class="muted">
+            Use <code>GetCustomAttributes()</code> when multiple attributes can appear on the same member.
+          </p>
+        </details>
+      </section>
+
+      <section id="assemblies">
+        <h2>Assemblies & Scanning</h2>
+        <p>
+          An <b>assembly</b> is a compiled .NET output (DLL/EXE). Reflection can load an assembly and scan its types.
+        </p>
+
+        <div class="example">
+          <div class="head"><strong>Example: Scan current assembly for classes that implement an interface</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Linq;
+using System.Reflection;
+
+public interface IReport
+{
+    string Name { get; }
+    void Run();
+}
+
+public class SalesReport : IReport
+{
+    public string Name =&gt; "Sales";
+    public void Run() =&gt; Console.WriteLine("Running Sales Report");
+}
+
+public class ProfitReport : IReport
+{
+    public string Name =&gt; "Profit";
+    public void Run() =&gt; Console.WriteLine("Running Profit Report");
+}
+
+class Program
+{
+    static void Main()
+    {
+        Assembly asm = Assembly.GetExecutingAssembly();
+
+        var reportTypes =
+            asm.GetTypes()
+               .Where(t =&gt; typeof(IReport).IsAssignableFrom(t) &amp;&amp; t.IsClass &amp;&amp; !t.IsAbstract);
+
+        foreach (var rt in reportTypes)
+        {
+            IReport report = (IReport)Activator.CreateInstance(rt)!;
+            Console.WriteLine("Found: " + report.Name);
+            report.Run();
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="callout">
+          <div class="callout-title">Tip: Scanning filters matter</div>
+          <p>
+            Always add filters like <code>t.IsClass</code>, <code>!t.IsAbstract</code>,
+            and interface checks to avoid creating wrong types.
+          </p>
+        </div>
+      </section>
+
+      <section id="plugins">
+        <h2>Plugin Architecture Example (Simple)</h2>
+        <p>
+          A plugin model means: your main app can “discover” and run new functionality without changing code.
+          Reflection helps locate plugin types that follow a contract (interface).
+        </p>
+
+        <div class="example">
+          <div class="head"><strong>Step 1: Define a plugin contract</strong></div>
+          <div class="body">
+<pre><code>public interface IPlugin
+{
+    string Key { get; }          // e.g. "excel", "pdf"
+    void Execute();
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="head"><strong>Step 2: Create plugins</strong></div>
+          <div class="body">
+<pre><code>using System;
+
+public class PdfPlugin : IPlugin
+{
+    public string Key =&gt; "pdf";
+    public void Execute() =&gt; Console.WriteLine("Exporting as PDF...");
+}
+
+public class ExcelPlugin : IPlugin
+{
+    public string Key =&gt; "excel";
+    public void Execute() =&gt; Console.WriteLine("Exporting as Excel...");
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="head"><strong>Step 3: Discover and run a plugin by key</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Linq;
+using System.Reflection;
+
+public static class PluginRunner
+{
+    public static void Run(string key)
+    {
+        var asm = Assembly.GetExecutingAssembly();
+
+        var pluginType = asm.GetTypes()
+            .Where(t =&gt; typeof(IPlugin).IsAssignableFrom(t) &amp;&amp; t.IsClass &amp;&amp; !t.IsAbstract)
+            .Select(t =&gt; (IPlugin)Activator.CreateInstance(t)!)
+            .FirstOrDefault(p =&gt; p.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
+
+        if (pluginType == null)
+        {
+            Console.WriteLine("Plugin not found: " + key);
+            return;
+        }
+
+        pluginType.Execute();
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        PluginRunner.Run("excel");
+        PluginRunner.Run("pdf");
+        PluginRunner.Run("image");
+    }
+}</code></pre>
+
+            <p class="muted small">
+              In real apps, plugins can be in separate DLLs and loaded using <code>Assembly.LoadFrom</code>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="di">
+        <h2>Mini Dependency Injection Example (Constructor Injection)</h2>
+        <p>
+          DI containers often use reflection to pick a constructor and create objects automatically.
+          Here is a tiny “educational DI” example.
+        </p>
+
+        <div class="example">
+          <div class="head"><strong>Example: A minimal DI container (educational)</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+public class MiniContainer
+{
+    private readonly Dictionary&lt;Type, Type&gt; registrations = new();
+
+    public void Register&lt;TService, TImpl&gt;()
+        where TImpl : TService
+    {
+        registrations[typeof(TService)] = typeof(TImpl);
+    }
+
+    public T Resolve&lt;T&gt;() =&gt; (T)Resolve(typeof(T));
+
+    private object Resolve(Type serviceType)
+    {
+        // map interface to implementation
+        if (registrations.TryGetValue(serviceType, out Type implType))
+            serviceType = implType;
+
+        // choose constructor with most parameters
+        var ctor = serviceType.GetConstructors()
+                              .OrderByDescending(c =&gt; c.GetParameters().Length)
+                              .FirstOrDefault();
+
+        if (ctor == null)
+            throw new Exception("No public constructor: " + serviceType.Name);
+
+        var args = ctor.GetParameters()
+                       .Select(p =&gt; Resolve(p.ParameterType))
+                       .ToArray();
+
+        return Activator.CreateInstance(serviceType, args)!;
+    }
+}
+
+// Services
+public interface ILogger { void Log(string msg); }
+public class ConsoleLogger : ILogger { public void Log(string msg) =&gt; Console.WriteLine(msg); }
+
+public interface IEmployeeService { void Add(string name); }
+public class EmployeeService : IEmployeeService
+{
+    private readonly ILogger logger;
+    public EmployeeService(ILogger logger) { this.logger = logger; }
+
+    public void Add(string name) =&gt; logger.Log("Added employee: " + name);
+}
+
+class Program
+{
+    static void Main()
+    {
+        var c = new MiniContainer();
+        c.Register&lt;ILogger, ConsoleLogger&gt;();
+        c.Register&lt;IEmployeeService, EmployeeService&gt;();
+
+        var svc = c.Resolve&lt;IEmployeeService&gt;();
+        svc.Add("Arun");
+    }
+}</code></pre>
+
+            <div class="callout warn">
+              <div class="callout-title">Educational purpose</div>
+              <p>
+                Real DI containers handle scopes, lifetimes, circular dependencies, generics, multiple registrations, etc.
+                Still, the core idea uses reflection: <span class="highlight">constructor discovery + parameter types</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="serialization">
+        <h2>Mini JSON-like Serializer (Reflection-Based)</h2>
+        <p>
+          Many serializers inspect properties to build a string output. Here’s a simple educational serializer.
+          (It is not a full JSON spec implementation, but it teaches the concept.)
+        </p>
+
+        <div class="example">
+          <div class="head"><strong>Example: Convert an object to a JSON-like string</strong></div>
+          <div class="body">
+<pre><code>using System;
+using System.Linq;
+using System.Reflection;
+
+public static class MiniSerializer
+{
+    public static string ToJsonLike(object obj)
+    {
+        Type t = obj.GetType();
+
+        var pairs = t.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            .Where(p =&gt; p.CanRead)
+            .Select(p =&gt;
+            {
+                object? v = p.GetValue(obj);
+                string valueStr =
+                    v == null ? "null" :
+                    v is string s ? $"\"{s}\"" :
+                    v is DateTime dt ? $"\"{dt:yyyy-MM-dd}\"" :
+                    v.ToString()!;
+
+                return $"\"{p.Name}\": {valueStr}";
+            });
+
+        return "{ " + string.Join(", ", pairs) + " }";
+    }
+}
+
+public class Customer
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public DateTime JoinedOn { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        var c = new Customer { Id = 1, Name = "Divya", JoinedOn = new DateTime(2025, 12, 12) };
+        Console.WriteLine(MiniSerializer.ToJsonLike(c));
+    }
+}</code></pre>
+            <p class="muted small">
+              Real serializers handle nested objects, arrays, escaping, circular references, performance, etc.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="exceptions">
+        <h2>Common Reflection Errors & Fixes</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Error / Problem</th>
+              <th>Why it happens</th>
+              <th>Fix</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>NullReferenceException</code> when using GetMethod/GetProperty</td>
+              <td>Member not found (wrong name, overload mismatch, wrong BindingFlags)</td>
+              <td>Check spelling, use correct <code>BindingFlags</code>, use overload with parameter types</td>
+            </tr>
+            <tr>
+              <td><code>MissingMethodException</code></td>
+              <td>No matching constructor found</td>
+              <td>Verify constructor signature or use <code>GetConstructors()</code> first</td>
+            </tr>
+            <tr>
+              <td><code>TargetInvocationException</code></td>
+              <td>Invoked method threw an exception</td>
+              <td>Inspect <code>ex.InnerException</code></td>
+            </tr>
+            <tr>
+              <td>Can’t access private members</td>
+              <td>Using default APIs without <code>NonPublic</code></td>
+              <td>Use <code>BindingFlags.NonPublic</code> (and understand risks)</td>
+            </tr>
+            <tr>
+              <td>Slow performance</td>
+              <td>Repeated scanning/invocation</td>
+              <td>Cache results; avoid reflection in tight loops</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="example">
+          <div class="head"><strong>Example: Handling TargetInvocationException</strong></div>
+          <div class="body">
+<pre><code>try
+{
+    methodInfo.Invoke(obj, args);
+}
+catch (TargetInvocationException ex)
+{
+    // real exception is inside InnerException
+    Console.WriteLine(ex.InnerException?.Message);
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="performance">
+        <h2>Performance & Safety</h2>
+
+        <div class="grid-2">
+          <div class="callout">
+            <div class="callout-title">Performance tips</div>
+            <ul>
+              <li><b>Cache</b> <code>Type</code>, <code>MethodInfo</code>, <code>PropertyInfo</code> if reused.</li>
+              <li>Avoid scanning assemblies repeatedly; scan once during startup.</li>
+              <li>Avoid reflection inside tight loops (millions of calls).</li>
+              <li>Prefer compiled delegates when invoking frequently (advanced).</li>
+            </ul>
+          </div>
+
+          <div class="callout warn">
+            <div class="callout-title">Safety tips</div>
+            <ul>
+              <li>Validate inputs if type names come from user/config.</li>
+              <li>Don’t invoke arbitrary methods from untrusted assemblies.</li>
+              <li>Prefer interfaces/contracts for plugins (not “any class”).</li>
+              <li>Be careful with private members—can break invariants.</li>
+            </ul>
+          </div>
+        </div>
+
+        <details>
+          <summary>Advanced note: caching MethodInfo is still slower than direct call</summary>
+          <p class="muted">
+            Caching reduces lookup overhead (finding the method), but <code>Invoke</code> itself still has overhead.
+            For hot paths, consider delegates (e.g., <code>Delegate.CreateDelegate</code>) or expression trees.
+          </p>
+        </details>
+      </section>
+
+      <section id="alternatives">
+        <h2>Alternatives to Reflection</h2>
+        <p>
+          Sometimes you can avoid reflection and still achieve your goal with safer and faster techniques.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Alternative</th>
+              <th>When it’s better</th>
+              <th>Example idea</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Interfaces + Factory pattern</td>
+              <td>You know possible types ahead of time</td>
+              <td><code>IPlugin</code> + dictionary map from key to instance</td>
+            </tr>
+            <tr>
+              <td>Generics</td>
+              <td>You can express behavior at compile time</td>
+              <td><code>List&lt;T&gt;</code>, <code>Mapper&lt;T&gt;</code></td>
+            </tr>
+            <tr>
+              <td><code>nameof()</code></td>
+              <td>Safer member names without strings</td>
+              <td><code>nameof(Employee.GiveRaise)</code></td>
+            </tr>
+            <tr>
+              <td>Source generators / compile-time code</td>
+              <td>You want speed + type safety</td>
+              <td>Generate mapping/serialization code at build time</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <div class="callout-title">Rule of thumb</div>
+          <p>
+            If you can solve it with <b>interfaces/generics</b>, do that first.
+            Use reflection when the app must discover types at runtime.
+          </p>
+        </div>
+      </section>
+
+      <section id="best-practices">
+        <h2>Best Practices Checklist</h2>
+
+        <div class="card">
+          <ul>
+            <li>✅ Prefer <code>typeof(T)</code> or <code>obj.GetType()</code> over type names as strings.</li>
+            <li>✅ Use <code>BindingFlags</code> intentionally (don’t “over-open” access).</li>
+            <li>✅ Cache reflection lookups if repeating them.</li>
+            <li>✅ Validate type discovery results (null checks) before using.</li>
+            <li>✅ Use contracts: interfaces/attributes to identify supported classes.</li>
+            <li>✅ Handle exceptions properly (<code>TargetInvocationException.InnerException</code>).</li>
+            <li>✅ Keep reflection code in one place (utility/helper), not spread everywhere.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="faq">
+        <h2>FAQ</h2>
+
+        <details>
+          <summary>Is reflection allowed in production applications?</summary>
+          <p>
+            Yes. Many production frameworks (ASP.NET Core, DI containers, serializers) use reflection.
+            The key is: use it carefully, cache results, and avoid untrusted inputs.
+          </p>
+        </details>
+
+        <details>
+          <summary>Can reflection access private members?</summary>
+          <p>
+            Yes, by using <code>BindingFlags.NonPublic</code>. But it can break encapsulation and should be avoided
+            unless you are writing diagnostic tooling or controlled framework behavior.
+          </p>
+        </details>
+
+        <details>
+          <summary>Why do I get null from GetMethod("MyMethod")?</summary>
+          <p>
+            Common reasons: wrong name, method is private, method overload exists, or you need parameter-type matching.
+            Try <code>GetMethods()</code> to list and confirm the correct signature, or use <code>BindingFlags</code>.
+          </p>
+        </details>
+      </section>
+
+      <section id="practice">
+        <h2>Practice Tasks (Assignments)</h2>
+        <p>Use these to test your understanding. Try solving without looking back first.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Task</th>
+              <th>Expected output (hint)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Create a class <code>Product</code> and use reflection to print all public properties with their types.</td>
+              <td>TypeName + PropertyName lines</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Write a method that takes <code>object</code> and prints property names + current values.</td>
+              <td>Key=value style output</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Add a custom attribute <code>[MaxLength(10)]</code> and validate string properties using reflection.</td>
+              <td>Throw exception if length &gt; 10</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Scan your assembly and list all classes implementing <code>IPlugin</code>.</td>
+              <td>Print each plugin key</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Dynamically call a method by name and parameters from a config object.</td>
+              <td>Method invoked successfully</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout warn">
+          <div class="callout-title">Trainer Note</div>
+          <p>
+            Encourage students to use <code>nameof()</code> where possible (compile-time safety),
+            and use reflection only when the “type/member name is truly dynamic”.
+          </p>
+        </div>
+      </section>
+
+      <section id="quiz">
+        <h2>Quick Quiz (Self-check)</h2>
+        <p class="muted">Pick an option and click “Check Answers”.</p>
+
+        <div class="quiz card">
+          <h3 style="margin-top:0;">1) Which class represents metadata about a type?</h3>
+          <label><input type="radio" name="q1" value="a" /> A) <code>Assembly</code></label>
+          <label><input type="radio" name="q1" value="b" /> B) <code>Type</code></label>
+          <label><input type="radio" name="q1" value="c" /> C) <code>Activator</code></label>
+
+          <div class="hr"></div>
+
+          <h3 style="margin-top:0;">2) Which BindingFlags do you need to access a private instance field?</h3>
+          <label><input type="radio" name="q2" value="a" /> A) <code>Public | Static</code></label>
+          <label><input type="radio" name="q2" value="b" /> B) <code>Instance | NonPublic</code></label>
+          <label><input type="radio" name="q2" value="c" /> C) <code>DeclaredOnly | Public</code></label>
+
+          <div class="hr"></div>
+
+          <h3 style="margin-top:0;">3) When a reflected method throws an exception, what exception do you often catch?</h3>
+          <label><input type="radio" name="q3" value="a" /> A) <code>TargetInvocationException</code></label>
+          <label><input type="radio" name="q3" value="b" /> B) <code>MissingMethodException</code></label>
+          <label><input type="radio" name="q3" value="c" /> C) <code>FormatException</code></label>
+
+          <div class="inline-btns">
+            <button class="btn" type="button" onclick="checkQuiz()">Check Answers</button>
+            <button class="btn secondary" type="button" onclick="resetQuiz()">Reset</button>
+          </div>
+
+          <div id="quizResult" class="result" style="display:none;"></div>
+        </div>
+      </section>
+
+      <div class="footer">
+        <p><b>ItTechGenie</b> • C# Reflection Notes • Self-contained HTML • Suitable for classroom teaching & handouts.</p>
+        <p class="muted">You can copy this file into your website as-is.</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Sidebar active link on scroll (simple)
+    const navLinks = Array.from(document.querySelectorAll('#sideNav a'));
+    const sections = navLinks.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
+    const setActive = (id) => {
+      navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+    };
+
+    const onScroll = () => {
+      const scrollPos = window.scrollY + 90;
+      let current = sections[0]?.id || 'intro';
+      for (const s of sections) {
+        if (s.offsetTop <= scrollPos) current = s.id;
+      }
+      setActive(current);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Quick jump search box (filters to matching nav item and scrolls)
+    const searchBox = document.getElementById('searchBox');
+    if (searchBox){
+      searchBox.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter'){
+          const q = (searchBox.value || '').toLowerCase().trim();
+          if (!q) return;
+
+          const match = navLinks.find(a => a.textContent.toLowerCase().includes(q));
+          if (match){
+            const target = document.querySelector(match.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            alert("No matching section found. Try: 'attributes', 'binding', 'assemblies', 'performance'...");
+          }
+        }
+      });
+    }
+
+    function checkQuiz(){
+      const answers = { q1:'b', q2:'b', q3:'a' };
+      let score = 0;
+      let total = 3;
+
+      for (const q in answers){
+        const chosen = document.querySelector('input[name="'+q+'"]:checked');
+        if (chosen && chosen.value === answers[q]) score++;
+      }
+
+      const box = document.getElementById('quizResult');
+      box.style.display = 'block';
+      box.textContent = `Score: ${score}/${total}  —  ` +
+        (score === total ? 'Perfect! ✅' :
+         score >= 2 ? 'Good job! Review the wrong one(s) and retry. 🙂' :
+         'Needs practice. Revisit sections and retry. 💪');
+    }
+
+    function resetQuiz(){
+      document.querySelectorAll('.quiz input[type="radio"]').forEach(r => r.checked = false);
+      const box = document.getElementById('quizResult');
+      box.style.display = 'none';
+      box.textContent = '';
+    }
+  </script>
+</body>
+</html>
