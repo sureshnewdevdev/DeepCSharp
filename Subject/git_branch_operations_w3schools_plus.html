@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>GitHub + Git Branch Operations (W3Schools+ Notes)</title>
+  <style>
+    :root{--bg:#0b1220;--card:#101a33;--text:#e9eefc;--muted:#b6c2e3;--accent:#7dd3fc;--accent2:#a78bfa;--ok:#34d399;--warn:#fbbf24;--bad:#fb7185;}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#060a14, #0b1220 30%, #060a14);color:var(--text);line-height:1.6;}
+    header{padding:28px 16px 18px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;background:rgba(6,10,20,.92);backdrop-filter: blur(10px);z-index:10;}
+    .wrap{max-width:1100px;margin:0 auto;}
+    h1{margin:0;font-size:28px;letter-spacing:.2px}
+    .sub{color:var(--muted);margin:6px 0 0}
+    .grid{display:grid;grid-template-columns:280px 1fr;gap:16px;align-items:start;padding:16px;}
+    nav{position:sticky;top:92px;max-height:calc(100vh - 110px);overflow:auto;background:rgba(16,26,51,.6);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px;}
+    nav a{display:block;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px;font-size:14px}
+    nav a:hover{background:rgba(125,211,252,.12);color:var(--text)}
+    main{background:rgba(16,26,51,.55);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;}
+    section{padding:8px 2px 18px;border-bottom:1px dashed rgba(255,255,255,.10);margin-bottom:14px}
+    section:last-child{border-bottom:none;margin-bottom:0}
+    h2{margin:10px 0 8px;font-size:22px}
+    h3{margin:14px 0 6px;font-size:17px;color:#dbe7ff}
+    .pill{display:inline-block;padding:2px 10px;border-radius:999px;background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.35);color:#efeaff;font-size:12px}
+    .card{background:rgba(11,18,32,.55);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .note{border-left:4px solid var(--accent);padding:10px 12px;background:rgba(125,211,252,.08);border-radius:10px}
+    .warn{border-left:4px solid var(--warn);padding:10px 12px;background:rgba(251,191,36,.08);border-radius:10px}
+    .danger{border-left:4px solid var(--bad);padding:10px 12px;background:rgba(251,113,133,.08);border-radius:10px}
+    .ok{border-left:4px solid var(--ok);padding:10px 12px;background:rgba(52,211,153,.08);border-radius:10px}
+    pre{margin:10px 0;background:#060a14;border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:12px;overflow:auto}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#e8f0ff}
+    table{width:100%;border-collapse:collapse;margin:10px 0;border-radius:12px;overflow:hidden}
+    th,td{border-bottom:1px solid rgba(255,255,255,.08);padding:10px 10px;text-align:left}
+    th{background:rgba(125,211,252,.12);color:#eff8ff}
+    tr:hover td{background:rgba(255,255,255,.03)}
+    .btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+    .btn{cursor:pointer;border:1px solid rgba(255,255,255,.15);background:rgba(167,139,250,.12);color:var(--text);padding:8px 10px;border-radius:12px;font-size:13px}
+    .btn:hover{background:rgba(167,139,250,.20)}
+    .search{width:100%;box-sizing:border-box;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(6,10,20,.65);color:var(--text);padding:10px 12px;margin-top:10px}
+    .kbd{font-family:ui-monospace,monospace;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:1px 6px;border-radius:8px;color:#fff}
+    footer{padding:14px 16px;color:var(--muted);text-align:center}
+    @media (max-width: 920px){.grid{grid-template-columns:1fr}nav{position:relative;top:auto;max-height:none}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>GitHub + Git Branch Operations <span class="pill">W3Schools+ Notes</span></h1>
+    <p class="sub">Branching, merging, rebase, cherry-pick, revert, reset, stash, and real-world workflows — explained step-by-step for beginners.</p>
+  </div>
+</header>
+
+<div class="grid wrap">
+  <nav>
+    <strong style="display:block;margin:6px 10px 4px;color:#ffffff;">Contents</strong>
+    <input id="navSearch" class="search" placeholder="Search topics (e.g., cherry-pick, rebase, reset)..." />
+    <div id="navLinks">
+      <a href="#intro">1. What is a branch?</a>
+      <a href="#setup">2. Setup (one-time)</a>
+      <a href="#create-switch">3. Create & switch branches</a>
+      <a href="#merge">4. Merge (fast-forward vs merge commit)</a>
+      <a href="#conflicts">5. Merge conflicts</a>
+      <a href="#rebase">6. Rebase (rewrite history)</a>
+      <a href="#cherrypick">7. Cherry-pick (copy commits)</a>
+      <a href="#revert-reset">8. Revert vs Reset</a>
+      <a href="#stash">9. Stash (save work temporarily)</a>
+      <a href="#rename-delete">10. Rename & delete branches</a>
+      <a href="#remote">11. Remote branches + GitHub</a>
+      <a href="#pr">12. Pull Requests workflow</a>
+      <a href="#best">13. Best practices</a>
+      <a href="#cheatsheet">14. Cheatsheet</a>
+      <a href="#exercises">15. Exercises (Beginner → Expert)</a>
+    </div>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>1) What is a branch?</h2>
+      <p>A <b>branch</b> is like a separate “timeline” of your project. You create a branch to work on a feature or bugfix without breaking the main code.</p>
+
+      <div class="card">
+        <h3>Visual idea (simplified)</h3>
+        <pre><code>main:     A --- B --- C
+                 \
+feature/login:    D --- E</code></pre>
+        <p class="note"><b>Meaning:</b> commits <code>D</code> and <code>E</code> are added in the feature branch. <code>main</code> is still safe at <code>C</code>.</p>
+      </div>
+
+      <div class="ok">
+        <b>In GitHub projects:</b> most teams keep <code>main</code> protected and do changes via feature branches + Pull Requests (PR).
+      </div>
+    </section>
+
+    <section id="setup">
+      <h2>2) Setup (one-time)</h2>
+      <p>Run these once on your machine (recommended):</p>
+      <pre><code>git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+git config --global init.defaultBranch main</code></pre>
+
+      <div class="note">
+        If you are using GitHub, enable <b>two-factor auth</b> and prefer <b>SSH</b> or <b>Personal Access Token</b> for pushing.
+      </div>
+    </section>
+
+    <section id="create-switch">
+      <h2>3) Create & switch branches</h2>
+
+      <table>
+        <tr><th>Goal</th><th>Command</th></tr>
+        <tr><td>See branches</td><td><code>git branch</code></td></tr>
+        <tr><td>Create a branch</td><td><code>git branch feature/login</code></td></tr>
+        <tr><td>Switch branch</td><td><code>git switch feature/login</code></td></tr>
+        <tr><td>Create + switch (one step)</td><td><code>git switch -c feature/login</code></td></tr>
+        <tr><td>Old way (still valid)</td><td><code>git checkout -b feature/login</code></td></tr>
+      </table>
+
+      <div class="card">
+        <h3>Mini demo</h3>
+        <pre><code># Start from main
+git switch main
+git pull
+
+# Create new branch
+git switch -c feature/login
+
+# Work + commit
+git add .
+git commit -m "Add login UI"</code></pre>
+      </div>
+
+      <p class="warn"><b>Common mistake:</b> Creating a branch from an outdated <code>main</code>. Always <code>git switch main</code> + <code>git pull</code> first.</p>
+    </section>
+
+    <section id="merge">
+      <h2>4) Merge (fast-forward vs merge commit)</h2>
+
+      <h3>A) Fast-forward merge (no divergence)</h3>
+      <pre><code>main:    A --- B
+               \
+feature:         C --- D</code></pre>
+      <p>If <code>main</code> didn’t move after branching, Git can “fast-forward” <code>main</code> to the feature tip.</p>
+      <pre><code>git switch main
+git merge feature/login</code></pre>
+
+      <h3>B) Merge commit (branches diverged)</h3>
+      <pre><code>main:    A --- B --- X
+               \       \
+feature:         C --- D  (merge commit M)
+</code></pre>
+      <p>If both branches have new commits, Git creates a merge commit.</p>
+      <pre><code>git switch main
+git merge feature/login</code></pre>
+
+      <div class="note">
+        <b>Team tip:</b> Many teams use GitHub PRs with “Squash and merge” (one clean commit) or “Rebase and merge”.
+      </div>
+    </section>
+
+    <section id="conflicts">
+      <h2>5) Merge conflicts</h2>
+      <p>A conflict happens when Git cannot decide which change to keep (same lines edited in both branches).</p>
+
+      <div class="card">
+        <h3>How to resolve conflicts (safe steps)</h3>
+        <ol>
+          <li>Run merge/rebase. Git will stop and mark conflicts.</li>
+          <li>Open conflict files and choose the correct lines.</li>
+          <li>Mark resolved: <code>git add &lt;file&gt;</code></li>
+          <li>Finish:
+            <ul>
+              <li>For merge: <code>git commit</code></li>
+              <li>For rebase: <code>git rebase --continue</code></li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <pre><code># Example: after merge conflict
+git status
+# edit files (remove conflict markers)
+git add .
+git commit</code></pre>
+
+      <div class="warn">
+        If you feel stuck, you can cancel:
+        <ul>
+          <li>Cancel merge: <code>git merge --abort</code></li>
+          <li>Cancel rebase: <code>git rebase --abort</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="rebase">
+      <h2>6) Rebase (rewrite history)</h2>
+      <p><b>Rebase</b> “replays” your commits on top of another branch to create a clean linear history.</p>
+
+      <div class="card">
+        <h3>Before and after</h3>
+        <pre><code>Before:
+main:     A --- B --- C
+                 \
+feature:           D --- E
+
+Rebase feature onto main:
+main:     A --- B --- C
+                       \
+feature:                D' --- E'</code></pre>
+        <p class="note"><b>Important:</b> Rebase creates <i>new</i> commits (<code>D'</code>, <code>E'</code>) with new hashes.</p>
+      </div>
+
+      <h3>Common use: keep your feature branch updated</h3>
+      <pre><code>git switch feature/login
+git fetch origin
+git rebase origin/main</code></pre>
+
+      <div class="danger">
+        <b>Golden rule:</b> Do not rebase commits that were already pushed and used by others (shared history), unless your team explicitly allows it and you know the impact.
+      </div>
+
+      <h3>Interactive rebase (clean your commits)</h3>
+      <pre><code># Reorder, squash, or edit last 5 commits
+git rebase -i HEAD~5</code></pre>
+      <p class="note">Interactive rebase is used to <b>squash</b> messy “fix typo” commits into one neat commit before PR.</p>
+    </section>
+
+    <section id="cherrypick">
+      <h2>7) Cherry-pick (copy commits)</h2>
+      <p><b>Cherry-pick</b> copies a specific commit from one branch and applies it onto another branch.</p>
+
+      <div class="card">
+        <h3>Real-world use cases</h3>
+        <ul>
+          <li>Urgent hotfix in <code>main</code> needs to go into <code>release</code> branch</li>
+          <li>You accidentally committed to the wrong branch and want to move a commit</li>
+          <li>Only one commit from a large feature is needed elsewhere</li>
+        </ul>
+      </div>
+
+      <h3>Example: pick one commit into main</h3>
+      <pre><code># Find commit hash from another branch
+git log --oneline feature/login
+
+# Switch to target branch
+git switch main
+
+# Copy that commit here
+git cherry-pick &lt;commit-hash&gt;</code></pre>
+
+      <h3>Cherry-pick a range of commits</h3>
+      <pre><code># Pick commits from A (exclusive) to B (inclusive)
+git cherry-pick &lt;A&gt;..&lt;B&gt;</code></pre>
+
+      <div class="warn">
+        Conflicts can happen during cherry-pick too. Resolve + <code>git add .</code> then:
+        <ul>
+          <li>Continue: <code>git cherry-pick --continue</code></li>
+          <li>Abort: <code>git cherry-pick --abort</code></li>
+        </ul>
+      </div>
+
+      <div class="note">
+        <b>Cherry-pick vs Merge:</b>
+        <ul>
+          <li><b>Merge</b> brings the whole branch history</li>
+          <li><b>Cherry-pick</b> brings only selected commits</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="revert-reset">
+      <h2>8) Revert vs Reset</h2>
+
+      <table>
+        <tr><th>Command</th><th>What it does</th><th>Safe for pushed commits?</th></tr>
+        <tr><td><code>git revert</code></td><td>Makes a <b>new commit</b> that undoes a previous commit</td><td><b>Yes</b> ✅</td></tr>
+        <tr><td><code>git reset</code></td><td>Moves branch pointer backwards (can delete commits locally)</td><td><b>No</b> ⚠️ (rewrites history)</td></tr>
+      </table>
+
+      <h3>A) Revert (recommended in teams)</h3>
+      <pre><code># Undo a specific commit safely
+git revert &lt;commit-hash&gt;</code></pre>
+
+      <h3>B) Reset (local cleanup)</h3>
+      <pre><code># Keep changes staged (rare)
+git reset --soft HEAD~1
+
+# Keep changes unstaged (common)
+git reset --mixed HEAD~1
+
+# Delete commit + changes (danger!)
+git reset --hard HEAD~1</code></pre>
+
+      <div class="danger">
+        <b>Never</b> run <code>git reset --hard</code> unless you are 100% sure you don't need those changes.
+      </div>
+    </section>
+
+    <section id="stash">
+      <h2>9) Stash (save work temporarily)</h2>
+      <p><b>Stash</b> is like putting your unfinished work into a drawer, so you can switch branches quickly.</p>
+
+      <pre><code># Save current changes
+git stash push -m "WIP: login form"
+
+# See stashes
+git stash list
+
+# Apply latest stash (keep stash)
+git stash apply
+
+# Apply and remove stash
+git stash pop
+
+# Drop a stash
+git stash drop stash@{0}</code></pre>
+
+      <div class="note">
+        If you often stash, use meaningful messages (<code>-m</code>) so you can find them easily.
+      </div>
+    </section>
+
+    <section id="rename-delete">
+      <h2>10) Rename & delete branches</h2>
+      <pre><code># Rename current branch
+git branch -m feature/login feature/auth-login
+
+# Delete local branch (safe: refuses if unmerged)
+git branch -d feature/auth-login
+
+# Force delete (danger)
+git branch -D feature/auth-login</code></pre>
+
+      <div class="warn">
+        Safe delete (<code>-d</code>) is preferred. Force delete (<code>-D</code>) only if you're sure.
+      </div>
+    </section>
+
+    <section id="remote">
+      <h2>11) Remote branches + GitHub</h2>
+      <p>When you push a branch to GitHub, others can see and collaborate.</p>
+
+      <pre><code># Push current branch to origin and set upstream
+git push -u origin feature/login
+
+# List remote branches
+git branch -r
+
+# Fetch updates from remote
+git fetch origin
+
+# Pull updates into current branch
+git pull</code></pre>
+
+      <div class="card">
+        <h3>Typical GitHub flow</h3>
+        <pre><code>1) Create branch: feature/login
+2) Push to GitHub
+3) Open Pull Request
+4) Code review + checks
+5) Merge PR into main
+6) Delete remote branch</code></pre>
+      </div>
+    </section>
+
+    <section id="pr">
+      <h2>12) Pull Requests workflow (industry standard)</h2>
+      <p>Most teams follow this process:</p>
+
+      <ol>
+        <li>Update <code>main</code>: <code>git switch main</code> + <code>git pull</code></li>
+        <li>Create feature branch: <code>git switch -c feature/x</code></li>
+        <li>Commit small logical changes</li>
+        <li>Push: <code>git push -u origin feature/x</code></li>
+        <li>Create PR in GitHub</li>
+        <li>Fix review comments (push more commits)</li>
+        <li>Merge via Squash/Rebase/Merge (as per team policy)</li>
+      </ol>
+
+      <div class="note">
+        <b>Squash and merge:</b> makes PR history clean (one commit in <code>main</code>) — great for beginner teams.
+      </div>
+    </section>
+
+    <section id="best">
+      <h2>13) Best practices</h2>
+      <ul>
+        <li><b>Branch naming</b>: <code>feature/</code>, <code>bugfix/</code>, <code>hotfix/</code>, <code>release/</code></li>
+        <li><b>Small commits</b>: one change per commit with clear message</li>
+        <li><b>Sync often</b>: rebase or merge from <code>main</code> regularly</li>
+        <li><b>Protect main</b>: require PR review + CI checks in GitHub settings</li>
+        <li><b>Avoid force push</b> unless you understand the impact</li>
+      </ul>
+      <div class="ok">
+        <b>Rule of thumb:</b> If the branch is shared → prefer <code>merge</code> or <code>revert</code>. If local only → you can <code>rebase</code> and <code>reset</code> safely.
+      </div>
+    </section>
+
+    <section id="cheatsheet">
+      <h2>14) Cheatsheet</h2>
+      <div class="btns">
+        <button class="btn" onclick="copyBlock('cs1')">Copy: Branch basics</button>
+        <button class="btn" onclick="copyBlock('cs2')">Copy: Merge/Rebase</button>
+        <button class="btn" onclick="copyBlock('cs3')">Copy: Cherry-pick/Revert/Reset</button>
+      </div>
+
+      <pre id="cs1"><code># Branch basics
+git branch
+git switch -c feature/x
+git add .
+git commit -m "message"
+git push -u origin feature/x</code></pre>
+
+      <pre id="cs2"><code># Merge (on main)
+git switch main
+git pull
+git merge feature/x
+
+# Rebase (on feature branch)
+git switch feature/x
+git fetch origin
+git rebase origin/main</code></pre>
+
+      <pre id="cs3"><code># Cherry-pick one commit
+git switch main
+git cherry-pick &lt;hash&gt;
+
+# Revert (safe)
+git revert &lt;hash&gt;
+
+# Reset (local rewrite)
+git reset --mixed HEAD~1
+git reset --hard  HEAD~1</code></pre>
+
+      <div class="note">
+        Tip: Use <code>git log --oneline --graph --decorate --all</code> to visualize your branches.
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>15) Exercises (Beginner → Expert)</h2>
+
+      <div class="card">
+        <h3>Beginner</h3>
+        <ol>
+          <li>Create a repo, make 2 commits on <code>main</code>.</li>
+          <li>Create <code>feature/readme</code>, add 2 commits, merge into <code>main</code>.</li>
+          <li>Create <code>bugfix/typo</code>, fix a typo, open a PR (even for practice).</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h3>Intermediate</h3>
+        <ol>
+          <li>Create two branches that modify the same file lines, trigger a conflict, resolve it.</li>
+          <li>Do an interactive rebase to squash 3 commits into 1.</li>
+          <li>Use stash to switch branches without committing.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h3>Expert (real-world)</h3>
+        <ol>
+          <li>Simulate a hotfix: create <code>hotfix/payments</code>, commit fix, merge to <code>main</code>.</li>
+          <li>Create <code>release/v1</code>, then cherry-pick the hotfix commit into <code>release/v1</code>.</li>
+          <li>Undo the hotfix on <code>release/v1</code> using <code>git revert</code> (not reset).</li>
+        </ol>
+      </div>
+
+      <div class="ok">
+        If you want, tell me your preferred workflow: <b>Merge commits</b> vs <b>Squash</b> vs <b>Rebase & merge</b> — I’ll tailor a “team standard” guide for you.
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  Built for quick teaching + print-friendly learning • Git commands are standard (works on Windows Git Bash, Linux, macOS).
+</footer>
+
+<script>
+  // Simple nav search
+  const input = document.getElementById('navSearch');
+  const links = Array.from(document.querySelectorAll('#navLinks a'));
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase().trim();
+    links.forEach(a => {
+      const show = a.textContent.toLowerCase().includes(q);
+      a.style.display = show ? 'block' : 'none';
+    });
+  });
+
+  // Copy helper
+  function copyBlock(id){
+    const el = document.getElementById(id);
+    const text = el.innerText;
+    navigator.clipboard.writeText(text).then(()=>{
+      const b = document.querySelector('button[onclick="copyBlock(\\''+id+'\\')"]');
+      if(b){ const old=b.textContent; b.textContent="Copied ✅"; setTimeout(()=>b.textContent=old, 900); }
+    });
+  }
+</script>
+</body>
+</html>

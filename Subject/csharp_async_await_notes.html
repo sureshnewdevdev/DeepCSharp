@@ -1,0 +1,1321 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>C# Async and Await — Better-than-W3Schools Notes</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#0f1620;
+      --panel2:#111c28;
+      --text:#e8eef6;
+      --muted:#a9b4c2;
+      --accent:#66d9ef;
+      --accent2:#a6e22e;
+      --warn:#f4bf75;
+      --danger:#ff6b6b;
+      --border:rgba(255,255,255,.10);
+      --code:#0a0f16;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+      --radius2:12px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --w: 1180px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:radial-gradient(1200px 700px at 10% -10%, rgba(102,217,239,.22), transparent 60%),
+                 radial-gradient(1000px 600px at 90% -5%, rgba(166,226,46,.12), transparent 55%),
+                 var(--bg);
+      line-height:1.6;
+    }
+    a{color:var(--accent); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      background:rgba(11,15,20,.8);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--border);
+    }
+    .topbar-inner{
+      max-width:var(--w); margin:0 auto; padding:12px 16px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+    }
+    .logo{
+      width:36px; height:36px; border-radius:12px;
+      background:linear-gradient(135deg, rgba(102,217,239,.9), rgba(166,226,46,.7));
+      box-shadow: var(--shadow);
+    }
+    .brand h1{
+      font-size:16px; margin:0; letter-spacing:.2px;
+    }
+    .pill{
+      font-size:12px; color:var(--muted);
+      border:1px solid var(--border);
+      padding:6px 10px; border-radius:999px;
+      background:rgba(255,255,255,.03);
+    }
+    .wrap{
+      max-width:var(--w);
+      margin: 18px auto 80px;
+      padding: 0 16px;
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap:18px;
+    }
+    @media (max-width: 980px){
+      .wrap{grid-template-columns:1fr}
+      .sidebar{position:relative !important; top:auto !important}
+    }
+    .sidebar{
+      position:sticky; top:70px;
+      align-self:start;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .sidebar .head{
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--border);
+      background:rgba(0,0,0,.18);
+    }
+    .sidebar .head .title{font-weight:700; font-size:14px; margin:0}
+    .sidebar .head .sub{margin:6px 0 0; color:var(--muted); font-size:12px}
+    .nav{list-style:none; padding:10px; margin:0}
+    .nav a{
+      display:block;
+      padding:10px 10px;
+      border-radius:12px;
+      color:var(--text);
+      border:1px solid transparent;
+    }
+    .nav a small{color:var(--muted)}
+    .nav a:hover{
+      background:rgba(102,217,239,.08);
+      border-color:rgba(102,217,239,.2);
+      text-decoration:none;
+    }
+    .nav a.active{
+      background:rgba(166,226,46,.10);
+      border-color:rgba(166,226,46,.25);
+      box-shadow: inset 0 0 0 1px rgba(166,226,46,.1);
+    }
+    .content{
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .hero{
+      padding:22px 22px 18px;
+      border-bottom:1px solid var(--border);
+      background: radial-gradient(900px 450px at 30% 0%, rgba(102,217,239,.13), transparent 60%),
+                  radial-gradient(700px 420px at 70% 0%, rgba(166,226,46,.10), transparent 55%),
+                  rgba(0,0,0,.15);
+    }
+    .hero h2{margin:0; font-size:28px; letter-spacing:.3px}
+    .hero p{margin:8px 0 0; color:var(--muted)}
+    .grid2{display:grid; grid-template-columns: 1.1fr .9fr; gap:14px; margin-top:16px}
+    @media (max-width: 880px){ .grid2{grid-template-columns:1fr} }
+    .card{
+      border:1px solid var(--border);
+      border-radius:var(--radius2);
+      background:rgba(255,255,255,.02);
+      padding:14px;
+    }
+    .card h3{margin:0 0 8px; font-size:16px}
+    .card p{margin:0; color:var(--muted); font-size:13px}
+    .section{
+      padding:22px;
+      border-bottom:1px solid var(--border);
+    }
+    .section:last-child{border-bottom:0}
+    h3.section-title{
+      margin:0 0 10px;
+      font-size:20px;
+      letter-spacing:.2px;
+    }
+    .note{
+      margin:12px 0;
+      border:1px solid rgba(102,217,239,.25);
+      background:rgba(102,217,239,.07);
+      padding:12px 12px;
+      border-radius:var(--radius2);
+      color:var(--text);
+    }
+    .warn{
+      border-color:rgba(244,191,117,.28);
+      background:rgba(244,191,117,.09);
+    }
+    .danger{
+      border-color:rgba(255,107,107,.28);
+      background:rgba(255,107,107,.09);
+    }
+    .mini{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:-4px;
+    }
+    .kbd{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:2px 7px;
+      border-radius:8px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+    }
+    .codebox{
+      margin:12px 0 18px;
+      border:1px solid var(--border);
+      border-radius:var(--radius2);
+      overflow:hidden;
+      background:rgba(0,0,0,.25);
+    }
+    .codehead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      background:rgba(0,0,0,.25);
+      font-size:12px;
+      color:var(--muted);
+      gap:10px;
+    }
+    .btn{
+      cursor:pointer;
+      font-size:12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:6px 10px;
+    }
+    .btn:hover{border-color:rgba(102,217,239,.35); background:rgba(102,217,239,.08)}
+    pre{
+      margin:0; padding:14px 14px;
+      overflow:auto;
+      background:var(--code);
+      font-family:var(--mono);
+      font-size:13px;
+      line-height:1.55;
+    }
+    code{font-family:var(--mono)}
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+    @media(max-width: 880px){ .row{grid-template-columns:1fr} }
+    .table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      border:1px solid var(--border);
+      border-radius:var(--radius2);
+      overflow:hidden;
+      background:rgba(0,0,0,.15);
+      margin:12px 0;
+      font-size:13px;
+    }
+    .table th, .table td{
+      padding:10px 10px;
+      border-bottom:1px solid var(--border);
+      vertical-align:top;
+    }
+    .table th{
+      text-align:left;
+      background:rgba(255,255,255,.03);
+    }
+    .table tr:last-child td{border-bottom:0}
+    .tag{
+      display:inline-block;
+      font-size:11px;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      color:var(--muted);
+      margin-right:6px;
+      background:rgba(255,255,255,.03);
+    }
+    .steps{
+      counter-reset: step;
+      margin: 10px 0 0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:10px;
+    }
+    .steps li{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      border-radius:var(--radius2);
+      padding:10px 10px 10px 44px;
+      position:relative;
+    }
+    .steps li::before{
+      counter-increment: step;
+      content: counter(step);
+      position:absolute;
+      left:12px; top:10px;
+      width:22px; height:22px;
+      display:grid; place-items:center;
+      border-radius:10px;
+      border:1px solid rgba(166,226,46,.35);
+      background:rgba(166,226,46,.10);
+      color:var(--text);
+      font-size:12px;
+      font-family:var(--mono);
+    }
+    .diagram{
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.25);
+      border-radius:var(--radius2);
+      overflow:hidden;
+      padding:12px;
+      margin:12px 0;
+    }
+    .diagram svg{width:100%; height:auto; display:block}
+    .exercise{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      border-radius:var(--radius2);
+      padding:12px;
+      margin:10px 0;
+    }
+    .exercise h4{margin:0 0 6px; font-size:15px}
+    .exercise p{margin:0; color:var(--muted); font-size:13px}
+    .footer{
+      padding:20px 22px;
+      color:var(--muted);
+      font-size:12px;
+      background:rgba(0,0,0,.14);
+      border-top:1px solid var(--border);
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      font-size:12px;
+      color:var(--muted);
+      margin-top:10px;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background: linear-gradient(135deg, rgba(102,217,239,.9), rgba(166,226,46,.8));
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>C# Async and Await</h1>
+          <div class="pill">Better-than-W3Schools style notes • with diagrams • with exercises</div>
+        </div>
+      </div>
+      <div class="pill">Last updated: 2026-02-09</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <aside class="sidebar" aria-label="Page navigation">
+      <div class="head">
+        <p class="title">On this page</p>
+        <p class="sub">Click a section. The current one auto-highlights while you scroll.</p>
+      </div>
+      <ul class="nav" id="nav">
+        <li><a href="#big-idea"><b>1) The big idea</b><br/><small>What async/await really means</small></a></li>
+        <li><a href="#why"><b>2) Why we need it</b><br/><small>Apps stay responsive</small></a></li>
+        <li><a href="#task"><b>3) Task and Task&lt;T&gt;</b><br/><small>The “promise” of a future result</small></a></li>
+        <li><a href="#async"><b>4) async keyword</b><br/><small>How methods change</small></a></li>
+        <li><a href="#await"><b>5) await keyword</b><br/><small>Pause without blocking</small></a></li>
+        <li><a href="#flow"><b>6) Flow diagram</b><br/><small>Step-by-step execution</small></a></li>
+        <li><a href="#first-program"><b>7) First working program</b><br/><small>Console app example</small></a></li>
+        <li><a href="#io"><b>8) I/O vs CPU work</b><br/><small>When async helps</small></a></li>
+        <li><a href="#whenall"><b>9) Run tasks together</b><br/><small>Task.WhenAll / WhenAny</small></a></li>
+        <li><a href="#exceptions"><b>10) Exceptions</b><br/><small>Try/catch with await</small></a></li>
+        <li><a href="#cancel"><b>11) Cancellation</b><br/><small>CancellationToken</small></a></li>
+        <li><a href="#tips"><b>12) Rules & tips</b><br/><small>Common mistakes</small></a></li>
+        <li><a href="#deadlock"><b>13) Deadlock story</b><br/><small>.Result / .Wait()</small></a></li>
+        <li><a href="#practice"><b>14) Exercises</b><br/><small>20 hands-on tasks</small></a></li>
+      </ul>
+    </aside>
+
+    <main class="content">
+      <header class="hero">
+        <h2>Async and Await in C#</h2>
+        <p>
+          These notes teach you how asynchronous code works, how to write it, and how to avoid the most common mistakes.
+          You’ll see short examples first, then full programs, then practice tasks.
+        </p>
+
+        <div class="grid2">
+          <div class="card">
+            <h3>What you will be able to do</h3>
+            <ul class="mini" style="margin:0 0 0 18px;">
+              <li>Write methods that do work without blocking the calling code</li>
+              <li>Use <span class="kbd">Task</span>, <span class="kbd">async</span>, and <span class="kbd">await</span> correctly</li>
+              <li>Run multiple operations together using <span class="kbd">Task.WhenAll</span></li>
+              <li>Handle errors and cancellation</li>
+              <li>Understand why <span class="kbd">.Result</span> and <span class="kbd">.Wait()</span> can cause trouble</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Quick mental model</h3>
+            <p>
+              <b>async/await</b> lets your code start work that takes time (like network, file, database),
+              and then <i>continue later</i> when the result is ready — without freezing the rest of the program.
+            </p>
+            <div class="badge"><span class="dot"></span>Think: “Start now, finish later.”</div>
+          </div>
+        </div>
+      </header>
+
+      <section class="section" id="big-idea">
+        <h3 class="section-title">1) The big idea</h3>
+
+        <div class="row">
+          <div>
+            <p>
+              Many operations take time:
+              downloading data, calling a Web API, reading a file, waiting for a database, etc.
+              If your code <b>blocks</b> while waiting, your program can feel slow or frozen.
+            </p>
+
+            <div class="note">
+              <b>Async code does not mean “faster”.</b><br/>
+              It means your program can do other useful things <i>while waiting</i> for slow operations.
+            </div>
+
+            <table class="table">
+              <tr>
+                <th>Blocking (synchronous)</th>
+                <th>Non-blocking (async)</th>
+              </tr>
+              <tr>
+                <td>Code waits and stops other work</td>
+                <td>Code starts work and continues later</td>
+              </tr>
+              <tr>
+                <td>UI may freeze / server threads may get stuck</td>
+                <td>UI stays responsive / server scales better</td>
+              </tr>
+            </table>
+          </div>
+
+          <div>
+            <div class="diagram" aria-label="Blocking vs non-blocking diagram">
+              <svg viewBox="0 0 880 520" role="img" aria-label="Timeline diagram">
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1">
+                    <stop offset="0" stop-color="rgba(102,217,239,.95)"/>
+                    <stop offset="1" stop-color="rgba(166,226,46,.85)"/>
+                  </linearGradient>
+                  <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="rgba(0,0,0,.45)"/>
+                  </filter>
+                </defs>
+
+                <rect x="18" y="18" width="844" height="484" rx="22" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.10)"/>
+                <text x="50" y="70" fill="rgba(232,238,246,.92)" font-size="28" font-family="system-ui">Timeline view</text>
+                <text x="50" y="102" fill="rgba(169,180,194,.95)" font-size="18" font-family="system-ui">Top: blocking • Bottom: async</text>
+
+                <!-- axis -->
+                <line x1="60" y1="150" x2="820" y2="150" stroke="rgba(255,255,255,.14)" stroke-width="3"/>
+                <line x1="60" y1="350" x2="820" y2="350" stroke="rgba(255,255,255,.14)" stroke-width="3"/>
+                <text x="60" y="140" fill="rgba(169,180,194,.95)" font-size="14" font-family="system-ui">start</text>
+                <text x="780" y="140" fill="rgba(169,180,194,.95)" font-size="14" font-family="system-ui">finish</text>
+
+                <!-- blocking bar -->
+                <text x="60" y="185" fill="rgba(232,238,246,.92)" font-size="18" font-family="system-ui">Blocking</text>
+                <rect x="170" y="165" width="460" height="40" rx="12" fill="rgba(255,107,107,.20)" stroke="rgba(255,107,107,.35)"/>
+                <text x="190" y="192" fill="rgba(232,238,246,.92)" font-size="16" font-family="system-ui">Waiting (program stuck)</text>
+                <rect x="640" y="165" width="180" height="40" rx="12" fill="rgba(166,226,46,.14)" stroke="rgba(166,226,46,.30)"/>
+                <text x="660" y="192" fill="rgba(232,238,246,.92)" font-size="16" font-family="system-ui">Continue</text>
+
+                <!-- async bar -->
+                <text x="60" y="385" fill="rgba(232,238,246,.92)" font-size="18" font-family="system-ui">Async</text>
+                <rect x="170" y="365" width="230" height="40" rx="12" fill="rgba(102,217,239,.18)" stroke="rgba(102,217,239,.35)"/>
+                <text x="190" y="392" fill="rgba(232,238,246,.92)" font-size="16" font-family="system-ui">Start work</text>
+
+                <rect x="410" y="365" width="210" height="40" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.14)"/>
+                <text x="430" y="392" fill="rgba(232,238,246,.92)" font-size="16" font-family="system-ui">Do other work</text>
+
+                <rect x="630" y="365" width="190" height="40" rx="12" fill="rgba(166,226,46,.14)" stroke="rgba(166,226,46,.30)"/>
+                <text x="650" y="392" fill="rgba(232,238,246,.92)" font-size="16" font-family="system-ui">Resume later</text>
+
+                <!-- arrows -->
+                <path d="M 400 150 C 430 210, 430 290, 400 350" fill="none" stroke="url(#g1)" stroke-width="4" opacity=".85"/>
+                <polygon points="400,350 392,338 408,338" fill="url(#g1)" opacity=".9"/>
+                <text x="445" y="258" fill="rgba(169,180,194,.95)" font-size="14" font-family="system-ui">waiting time is used better</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="why">
+        <h3 class="section-title">2) Why we need it</h3>
+
+        <div class="row">
+          <div>
+            <p><span class="tag">Desktop/UI</span> If a button click calls a slow API and your code blocks, the UI can freeze.</p>
+            <p><span class="tag">Web server</span> If a request thread blocks while waiting for the database, the server handles fewer users.</p>
+            <p><span class="tag">Console</span> Even in console apps, async makes it easier to run many I/O operations efficiently.</p>
+
+            <div class="note warn">
+              <b>Most value comes from I/O work:</b> network calls, files, database, waiting for timers.
+              For heavy CPU calculations, you usually use different techniques (like parallel processing).
+            </div>
+          </div>
+
+          <div>
+            <div class="diagram" aria-label="Where async helps diagram">
+              <svg viewBox="0 0 880 420" role="img" aria-label="Async helps in UI and server">
+                <rect x="18" y="18" width="844" height="384" rx="22" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.10)"/>
+                <text x="50" y="68" fill="rgba(232,238,246,.92)" font-size="26" font-family="system-ui">Where async/await helps most</text>
+
+                <!-- UI box -->
+                <rect x="60" y="110" width="360" height="240" rx="18" fill="rgba(102,217,239,.10)" stroke="rgba(102,217,239,.30)"/>
+                <text x="90" y="150" fill="rgba(232,238,246,.92)" font-size="18" font-family="system-ui">UI App</text>
+                <text x="90" y="180" fill="rgba(169,180,194,.95)" font-size="14" font-family="system-ui">Button → call API → update screen</text>
+                <rect x="90" y="205" width="300" height="44" rx="14" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.12)"/>
+                <text x="110" y="234" fill="rgba(232,238,246,.92)" font-size="15" font-family="system-ui">await HttpClient.GetAsync(...)</text>
+                <text x="90" y="285" fill="rgba(169,180,194,.95)" font-size="14" font-family="system-ui">UI stays responsive while waiting</text>
+
+                <!-- Server box -->
+                <rect x="460" y="110" width="360" height="240" rx="18" fill="rgba(166,226,46,.08)" stroke="rgba(166,226,46,.28)"/>
+                <text x="490" y="150" fill="rgba(232,238,246,.92)" font-size="18" font-family="system-ui">Web Server</text>
+                <text x="490" y="180" fill="rgba(169,180,194,.95)" font-size="14" font-family="system-ui">Request → DB/API → response</text>
+                <rect x="490" y="205" width="300" height="44" rx="14" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.12)"/>
+                <text x="510" y="234" fill="rgba(232,238,246,.92)" font-size="15" font-family="system-ui">await dbCommand.ExecuteReaderAsync()</text>
+                <text x="490" y="285" fill="rgba(169,180,194,.95)" font-size="14" font-family="system-ui">Threads aren’t stuck waiting</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="task">
+        <h3 class="section-title">3) Task and Task&lt;T&gt;</h3>
+        <p>
+          In C#, asynchronous methods usually return <code>Task</code> or <code>Task&lt;T&gt;</code>.
+        </p>
+
+        <table class="table">
+          <tr>
+            <th>Type</th>
+            <th>Meaning</th>
+            <th>Example</th>
+          </tr>
+          <tr>
+            <td><code>Task</code></td>
+            <td>Represents “work that will finish later” (no return value)</td>
+            <td><code>Task SaveAsync()</code></td>
+          </tr>
+          <tr>
+            <td><code>Task&lt;T&gt;</code></td>
+            <td>Represents “work that will finish later” and will produce a value</td>
+            <td><code>Task&lt;string&gt; DownloadAsync()</code></td>
+          </tr>
+        </table>
+
+        <div class="note">
+          A <b>Task</b> is like a “ticket” you hold while the work is happening. Later you can await it to get completion (and a value if it is Task&lt;T&gt;).
+        </div>
+
+        <div class="codebox">
+          <div class="codehead">
+            <span>Example: Task vs Task&lt;T&gt;</span>
+            <button class="btn" data-copy="#c_task">Copy</button>
+          </div>
+          <pre id="c_task"><code>using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        await SaveAsync();                // Task (no return)
+        int total = await GetTotalAsync(); // Task&lt;int&gt; (returns value)
+        Console.WriteLine(total);
+    }
+
+    static async Task SaveAsync()
+    {
+        await Task.Delay(300); // pretend we saved to DB
+        Console.WriteLine("Saved!");
+    }
+
+    static async Task&lt;int&gt; GetTotalAsync()
+    {
+        await Task.Delay(300); // pretend we calculated
+        return 42;
+    }
+}</code></pre>
+        </div>
+
+        <div class="note warn">
+          <b>Important:</b> <code>Task.Delay</code> is used only to simulate waiting. In real apps, waiting comes from I/O (HTTP calls, DB calls, file reads).
+        </div>
+      </section>
+
+      <section class="section" id="async">
+        <h3 class="section-title">4) async keyword</h3>
+        <p>
+          <code>async</code> is added to a method to allow using <code>await</code> inside it.
+        </p>
+
+        <table class="table">
+          <tr>
+            <th>Method signature</th>
+            <th>When to use</th>
+          </tr>
+          <tr>
+            <td><code>async Task</code></td>
+            <td>Async method that returns nothing (besides completion)</td>
+          </tr>
+          <tr>
+            <td><code>async Task&lt;T&gt;</code></td>
+            <td>Async method that returns a value later</td>
+          </tr>
+          <tr>
+            <td><code>async void</code></td>
+            <td><b>Avoid</b> (except event handlers). Errors are harder to catch.</td>
+          </tr>
+        </table>
+
+        <div class="note">
+          If a method uses <code>await</code>, it almost always should return <code>Task</code> or <code>Task&lt;T&gt;</code>.
+        </div>
+
+        <div class="codebox">
+          <div class="codehead">
+            <span>Example: async method returning Task&lt;string&gt;</span>
+            <button class="btn" data-copy="#c_async">Copy</button>
+          </div>
+          <pre id="c_async"><code>using System.Threading.Tasks;
+
+public class GreetingService
+{
+    public async Task&lt;string&gt; GetGreetingAsync(string name)
+    {
+        await Task.Delay(200); // pretend network delay
+        return $"Hello, {name}!";
+    }
+}</code></pre>
+        </div>
+      </section>
+
+      <section class="section" id="await">
+        <h3 class="section-title">5) await keyword</h3>
+        <p>
+          <code>await</code> is used in front of a <code>Task</code> to say:
+          “Continue this method later, after this task completes.”
+        </p>
+
+        <div class="row">
+          <div>
+            <div class="note">
+              <b>Key point:</b> <code>await</code> does <i>not</i> block the thread like <code>.Wait()</code> does.
+              It yields control so other work can happen.
+            </div>
+
+            <ul class="mini" style="margin:0 0 0 18px;">
+              <li><b>Before await:</b> code runs normally.</li>
+              <li><b>At await:</b> method pauses and returns control to its caller.</li>
+              <li><b>After await:</b> method resumes when the awaited task finishes.</li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="diagram" aria-label="Await pause-resume diagram">
+              <svg viewBox="0 0 880 420" role="img" aria-label="Await pause/resume flow">
+                <rect x="18" y="18" width="844" height="384" rx="22" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.10)"/>
+                <text x="50" y="68" fill="rgba(232,238,246,.92)" font-size="26" font-family="system-ui">What await does</text>
+
+                <rect x="60" y="120" width="220" height="64" rx="16" fill="rgba(102,217,239,.14)" stroke="rgba(102,217,239,.30)"/>
+                <text x="90" y="160" fill="rgba(232,238,246,.92)" font-size="18" font-family="system-ui">Run code</text>
+
+                <rect x="330" y="120" width="240" height="64" rx="16" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.14)"/>
+                <text x="355" y="160" fill="rgba(232,238,246,.92)" font-size="18" font-family="system-ui">await task</text>
+
+                <rect x="610" y="120" width="220" height="64" rx="16" fill="rgba(166,226,46,.12)" stroke="rgba(166,226,46,.30)"/>
+                <text x="635" y="160" fill="rgba(232,238,246,.92)" font-size="18" font-family="system-ui">Resume</text>
+
+                <!-- arrows -->
+                <line x1="280" y1="152" x2="330" y2="152" stroke="rgba(232,238,246,.35)" stroke-width="4"/>
+                <polygon points="330,152 318,144 318,160" fill="rgba(232,238,246,.55)"/>
+                <line x1="570" y1="152" x2="610" y2="152" stroke="rgba(232,238,246,.35)" stroke-width="4"/>
+                <polygon points="610,152 598,144 598,160" fill="rgba(232,238,246,.55)"/>
+
+                <!-- async waiting bubble -->
+                <path d="M 450 214 C 380 240, 380 310, 450 336 C 520 310, 520 240, 450 214 Z" fill="rgba(244,191,117,.10)" stroke="rgba(244,191,117,.30)"/>
+                <text x="392" y="278" fill="rgba(232,238,246,.92)" font-size="16" font-family="system-ui">While waiting…</text>
+                <text x="365" y="305" fill="rgba(169,180,194,.95)" font-size="13" font-family="system-ui">other code can run</text>
+
+                <line x1="450" y1="184" x2="450" y2="214" stroke="rgba(244,191,117,.35)" stroke-width="3"/>
+                <polygon points="450,214 442,202 458,202" fill="rgba(244,191,117,.65)"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="codebox">
+          <div class="codehead">
+            <span>Example: await pauses inside the method</span>
+            <button class="btn" data-copy="#c_await">Copy</button>
+          </div>
+          <pre id="c_await"><code>using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        Console.WriteLine("A");
+        await PrintAfterDelayAsync();
+        Console.WriteLine("C");
+    }
+
+    static async Task PrintAfterDelayAsync()
+    {
+        Console.WriteLine("B1");
+        await Task.Delay(500);
+        Console.WriteLine("B2");
+    }
+}
+
+// Expected output order:
+// A
+// B1
+// (pause ~500ms)
+// B2
+// C</code></pre>
+        </div>
+      </section>
+
+      <section class="section" id="flow">
+        <h3 class="section-title">6) Flow diagram (step-by-step)</h3>
+
+        <p>This diagram shows what happens when an async method is called and hits an await:</p>
+
+        <div class="diagram" aria-label="Detailed flow diagram">
+          <svg viewBox="0 0 980 520" role="img" aria-label="Async await detailed flow">
+            <rect x="18" y="18" width="944" height="484" rx="22" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.10)"/>
+            <text x="52" y="68" fill="rgba(232,238,246,.92)" font-size="26" font-family="system-ui">Call → await → resume</text>
+
+            <!-- Caller column -->
+            <text x="90" y="112" fill="rgba(169,180,194,.95)" font-size="14" font-family="system-ui">Caller</text>
+            <rect x="60" y="130" width="360" height="320" rx="18" fill="rgba(102,217,239,.06)" stroke="rgba(102,217,239,.22)"/>
+            <rect x="90" y="170" width="300" height="58" rx="16" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.12)"/>
+            <text x="110" y="205" fill="rgba(232,238,246,.92)" font-size="16" font-family="system-ui">Call: DoWorkAsync()</text>
+
+            <rect x="90" y="245" width="300" height="58" rx="16" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.12)"/>
+            <text x="110" y="280" fill="rgba(232,238,246,.92)" font-size="16" font-family="system-ui">Gets Task immediately</text>
+
+            <rect x="90" y="320" width="300" height="58" rx="16" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.12)"/>
+            <text x="110" y="355" fill="rgba(232,238,246,.92)" font-size="16" font-family="system-ui">Can await it later</text>
+
+            <!-- Callee column -->
+            <text x="560" y="112" fill="rgba(169,180,194,.95)" font-size="14" font-family="system-ui">Async method</text>
+            <rect x="520" y="130" width="400" height="320" rx="18" fill="rgba(166,226,46,.05)" stroke="rgba(166,226,46,.22)"/>
+
+            <rect x="550" y="170" width="340" height="58" rx="16" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.12)"/>
+            <text x="570" y="205" fill="rgba(232,238,246,.92)" font-size="16" font-family="system-ui">Runs until first await</text>
+
+            <rect x="550" y="245" width="340" height="58" rx="16" fill="rgba(244,191,117,.10)" stroke="rgba(244,191,117,.28)"/>
+            <text x="570" y="280" fill="rgba(232,238,246,.92)" font-size="16" font-family="system-ui">await: yields control</text>
+
+            <rect x="550" y="320" width="340" height="58" rx="16" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.12)"/>
+            <text x="570" y="355" fill="rgba(232,238,246,.92)" font-size="16" font-family="system-ui">Resumes when task completes</text>
+
+            <!-- arrows between columns -->
+            <line x1="390" y1="200" x2="550" y2="200" stroke="rgba(232,238,246,.35)" stroke-width="4"/>
+            <polygon points="550,200 538,192 538,208" fill="rgba(232,238,246,.55)"/>
+
+            <path d="M 720 303 C 780 286, 840 250, 840 210" fill="none" stroke="rgba(244,191,117,.35)" stroke-width="4"/>
+            <polygon points="840,210 832,222 848,222" fill="rgba(244,191,117,.65)"/>
+            <text x="760" y="292" fill="rgba(169,180,194,.95)" font-size="13" font-family="system-ui">work continues elsewhere</text>
+
+            <path d="M 840 210 C 840 380, 700 410, 580 378" fill="none" stroke="rgba(166,226,46,.30)" stroke-width="4"/>
+            <polygon points="580,378 592,370 592,386" fill="rgba(166,226,46,.60)"/>
+            <text x="750" y="410" fill="rgba(169,180,194,.95)" font-size="13" font-family="system-ui">completion triggers resume</text>
+          </svg>
+        </div>
+
+        <ol class="steps">
+          <li><b>Caller</b> calls the async method.</li>
+          <li>The async method runs <b>until it reaches the first await</b>.</li>
+          <li>At <b>await</b>, the method returns control to the caller, along with a <b>Task</b>.</li>
+          <li>When the awaited work finishes, the method <b>resumes after await</b>.</li>
+          <li>The Task becomes <b>completed</b>, and the caller can continue with the result.</li>
+        </ol>
+      </section>
+
+      <section class="section" id="first-program">
+        <h3 class="section-title">7) First working program (Console App)</h3>
+        <p>
+          This example shows an async method that simulates a slow operation and returns a value.
+        </p>
+
+        <div class="codebox">
+          <div class="codehead">
+            <span>Console app: async Main + await</span>
+            <button class="btn" data-copy="#c_first">Copy</button>
+          </div>
+          <pre id="c_first"><code>using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        Console.WriteLine("Starting...");
+
+        string data = await GetDataAsync();
+
+        Console.WriteLine("Received: " + data);
+        Console.WriteLine("Done.");
+    }
+
+    static async Task&lt;string&gt; GetDataAsync()
+    {
+        // Simulate slow work (like HTTP/DB/file)
+        await Task.Delay(1000);
+        return "DATA-123";
+    }
+}</code></pre>
+        </div>
+
+        <div class="note">
+          <b>Try it:</b> Run the program. You’ll see "Starting..." immediately, then after ~1 second the result prints.
+        </div>
+      </section>
+
+      <section class="section" id="io">
+        <h3 class="section-title">8) I/O work vs CPU work</h3>
+
+        <div class="row">
+          <div>
+            <p>
+              Async is best when your code spends time <b>waiting</b> for something outside the CPU:
+              network, disk, database, timers.
+            </p>
+
+            <table class="table">
+              <tr>
+                <th>Type of work</th>
+                <th>Example</th>
+                <th>Best tool</th>
+              </tr>
+              <tr>
+                <td>I/O (waiting)</td>
+                <td>HTTP call, DB query, file read</td>
+                <td><b>async/await</b></td>
+              </tr>
+              <tr>
+                <td>CPU (calculating)</td>
+                <td>Image processing, huge math loop</td>
+                <td>Optimizations / parallel methods (later topic)</td>
+              </tr>
+            </table>
+
+            <div class="note warn">
+              Don’t use <code>Task.Run</code> everywhere. For I/O work, prefer real async APIs like <code>ReadAsync</code>, <code>GetAsync</code>, <code>ExecuteReaderAsync</code>.
+            </div>
+          </div>
+
+          <div>
+            <div class="codebox">
+              <div class="codehead">
+                <span>Example: Real I/O-style call (HTTP)</span>
+                <button class="btn" data-copy="#c_http">Copy</button>
+              </div>
+              <pre id="c_http"><code>using System.Net.Http;
+using System.Threading.Tasks;
+
+public class ApiClient
+{
+    private readonly HttpClient _http = new HttpClient();
+
+    public async Task&lt;string&gt; GetHomePageHtmlAsync()
+    {
+        // Real asynchronous I/O
+        return await _http.GetStringAsync("https://example.com");
+    }
+}</code></pre>
+            </div>
+            <div class="note">
+              <b>Notice:</b> The method returns <code>Task&lt;string&gt;</code>, and we await the HTTP call.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="whenall">
+        <h3 class="section-title">9) Run tasks together (WhenAll / WhenAny)</h3>
+
+        <p>
+          If you have multiple independent async operations, you can start them first and then await them together.
+        </p>
+
+        <div class="codebox">
+          <div class="codehead">
+            <span>Example: Task.WhenAll</span>
+            <button class="btn" data-copy="#c_whenall">Copy</button>
+          </div>
+          <pre id="c_whenall"><code>using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        Task&lt;string&gt; t1 = GetValueAsync("A", 800);
+        Task&lt;string&gt; t2 = GetValueAsync("B", 400);
+        Task&lt;string&gt; t3 = GetValueAsync("C", 600);
+
+        // Wait for all to finish
+        string[] results = await Task.WhenAll(t1, t2, t3);
+
+        Console.WriteLine(string.Join(", ", results));
+    }
+
+    static async Task&lt;string&gt; GetValueAsync(string name, int delayMs)
+    {
+        await Task.Delay(delayMs);
+        return name + "-done";
+    }
+}</code></pre>
+        </div>
+
+        <div class="codebox">
+          <div class="codehead">
+            <span>Example: Task.WhenAny (first one wins)</span>
+            <button class="btn" data-copy="#c_whenany">Copy</button>
+          </div>
+          <pre id="c_whenany"><code>using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        Task&lt;string&gt; slow = GetValueAsync("slow", 900);
+        Task&lt;string&gt; fast = GetValueAsync("fast", 300);
+
+        Task&lt;string&gt; first = await Task.WhenAny(slow, fast);
+        Console.WriteLine("First finished: " + await first);
+    }
+
+    static async Task&lt;string&gt; GetValueAsync(string name, int delayMs)
+    {
+        await Task.Delay(delayMs);
+        return name;
+    }
+}</code></pre>
+        </div>
+
+        <div class="note">
+          Starting tasks before awaiting them is a common pattern when you want them to run in parallel (especially for I/O).
+        </div>
+      </section>
+
+      <section class="section" id="exceptions">
+        <h3 class="section-title">10) Exceptions with await</h3>
+
+        <p>
+          If an awaited task fails, the exception is raised at the <code>await</code> line.
+          So you use normal <code>try/catch</code>.
+        </p>
+
+        <div class="codebox">
+          <div class="codehead">
+            <span>Example: try/catch around await</span>
+            <button class="btn" data-copy="#c_ex">Copy</button>
+          </div>
+          <pre id="c_ex"><code>using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        try
+        {
+            int n = await DivideAsync(10, 0);
+            Console.WriteLine(n);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error: " + ex.Message);
+        }
+    }
+
+    static async Task&lt;int&gt; DivideAsync(int a, int b)
+    {
+        await Task.Delay(200); // pretend work
+        return a / b;          // throws if b is 0
+    }
+}</code></pre>
+        </div>
+
+        <div class="note warn">
+          If you use <code>Task.WhenAll</code> and multiple tasks fail, exceptions can be combined.
+          For now: wrap the <code>await Task.WhenAll(...)</code> in a try/catch and print the error.
+        </div>
+      </section>
+
+      <section class="section" id="cancel">
+        <h3 class="section-title">11) Cancellation (CancellationToken)</h3>
+
+        <p>
+          Sometimes you start an operation but later you want to stop it (for example: user clicks “Cancel”, or a timeout).
+          C# uses <code>CancellationToken</code>.
+        </p>
+
+        <div class="codebox">
+          <div class="codehead">
+            <span>Example: cancel a running async operation</span>
+            <button class="btn" data-copy="#c_cancel">Copy</button>
+          </div>
+          <pre id="c_cancel"><code>using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        using var cts = new CancellationTokenSource();
+        cts.CancelAfter(1200); // auto-cancel after 1.2 seconds
+
+        try
+        {
+            await LongOperationAsync(cts.Token);
+            Console.WriteLine("Completed");
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Cancelled");
+        }
+    }
+
+    static async Task LongOperationAsync(CancellationToken token)
+    {
+        for (int i = 1; i &lt;= 10; i++)
+        {
+            token.ThrowIfCancellationRequested();
+            Console.WriteLine("Step " + i);
+            await Task.Delay(300, token); // delay that can be cancelled
+        }
+    }
+}</code></pre>
+        </div>
+
+        <div class="note">
+          Many .NET APIs accept a <code>CancellationToken</code>. Pass it through so callers can cancel.
+        </div>
+      </section>
+
+      <section class="section" id="tips">
+        <h3 class="section-title">12) Rules & tips (most important)</h3>
+
+        <div class="row">
+          <div>
+            <div class="note">
+              <b>Rule 1:</b> If you call an async method, prefer <b>await</b> instead of using <code>.Result</code> or <code>.Wait()</code>.
+            </div>
+
+            <div class="note">
+              <b>Rule 2:</b> Use async all the way: if method A awaits method B, then method A should also be async.
+            </div>
+
+            <div class="note warn">
+              <b>Rule 3:</b> Avoid <code>async void</code> except event handlers.
+              Use <code>async Task</code> instead.
+            </div>
+          </div>
+
+          <div>
+            <table class="table">
+              <tr>
+                <th>Common mistake</th>
+                <th>Better option</th>
+              </tr>
+              <tr>
+                <td><code>task.Result</code> / <code>task.Wait()</code></td>
+                <td><code>await task</code></td>
+              </tr>
+              <tr>
+                <td>Forgetting to await a task</td>
+                <td><code>await</code> it or return it</td>
+              </tr>
+              <tr>
+                <td>Using <code>Task.Run</code> for I/O</td>
+                <td>Use real async APIs (e.g., <code>ReadAsync</code>)</td>
+              </tr>
+              <tr>
+                <td>Not handling cancellation</td>
+                <td>Accept and pass <code>CancellationToken</code></td>
+              </tr>
+              <tr>
+                <td>Swallowing exceptions</td>
+                <td>Use try/catch around await</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="deadlock">
+        <h3 class="section-title">13) The deadlock story (why .Result can be dangerous)</h3>
+
+        <p>
+          Sometimes developers write:
+        </p>
+
+        <div class="codebox">
+          <div class="codehead">
+            <span>Anti-pattern: blocking on async</span>
+            <button class="btn" data-copy="#c_dead">Copy</button>
+          </div>
+          <pre id="c_dead"><code>// ❌ Avoid (can deadlock in UI apps / older ASP.NET)
+string text = GetDataAsync().Result;</code></pre>
+        </div>
+
+        <div class="row">
+          <div>
+            <p>
+              In UI apps (and some server environments), there is a “main context” that wants to run continuations.
+              When you block it using <code>.Result</code> or <code>.Wait()</code>, the continuation can’t run,
+              and both sides wait forever.
+            </p>
+
+            <div class="note danger">
+              <b>Best habit:</b> If code is async, keep it async: <code>await GetDataAsync()</code>.
+            </div>
+          </div>
+
+          <div>
+            <div class="diagram" aria-label="Deadlock diagram">
+              <svg viewBox="0 0 880 430" role="img" aria-label="Deadlock with Result diagram">
+                <rect x="18" y="18" width="844" height="394" rx="22" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.10)"/>
+                <text x="50" y="68" fill="rgba(232,238,246,.92)" font-size="26" font-family="system-ui">Deadlock idea</text>
+
+                <rect x="60" y="110" width="360" height="260" rx="18" fill="rgba(255,107,107,.08)" stroke="rgba(255,107,107,.26)"/>
+                <text x="90" y="150" fill="rgba(232,238,246,.92)" font-size="18" font-family="system-ui">Main thread/context</text>
+                <rect x="90" y="175" width="300" height="52" rx="16" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.12)"/>
+                <text x="110" y="208" fill="rgba(232,238,246,.92)" font-size="15" font-family="system-ui">Blocked by .Result</text>
+
+                <rect x="460" y="110" width="360" height="260" rx="18" fill="rgba(102,217,239,.06)" stroke="rgba(102,217,239,.22)"/>
+                <text x="490" y="150" fill="rgba(232,238,246,.92)" font-size="18" font-family="system-ui">Async operation</text>
+                <rect x="490" y="175" width="300" height="52" rx="16" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.12)"/>
+                <text x="510" y="208" fill="rgba(232,238,246,.92)" font-size="15" font-family="system-ui">Needs main context to resume</text>
+
+                <path d="M 390 250 C 440 250, 440 250, 490 250" fill="none" stroke="rgba(232,238,246,.35)" stroke-width="4"/>
+                <polygon points="490,250 478,242 478,258" fill="rgba(232,238,246,.55)"/>
+
+                <path d="M 490 285 C 440 285, 440 285, 390 285" fill="none" stroke="rgba(244,191,117,.35)" stroke-width="4"/>
+                <polygon points="390,285 402,277 402,293" fill="rgba(244,191,117,.65)"/>
+
+                <text x="340" y="320" fill="rgba(169,180,194,.95)" font-size="13" font-family="system-ui">both wait → deadlock</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="note">
+          In many modern server setups this is less common, but it’s still a powerful reason to avoid blocking on async code.
+        </div>
+      </section>
+
+      <section class="section" id="practice">
+        <h3 class="section-title">14) Exercises (20)</h3>
+        <p class="mini">
+          Do these in order. Each exercise builds a small part of real async skill.
+          Use a console app unless the exercise mentions a UI/web scenario.
+        </p>
+
+        <div class="exercise">
+          <h4>1) Print order</h4>
+          <p>Create an async method that prints <code>Start</code>, awaits <code>Task.Delay(500)</code>, then prints <code>End</code>. Call it from <code>Main</code>.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>2) Task&lt;T&gt; return</h4>
+          <p>Write <code>Task&lt;int&gt; GetNumberAsync()</code> that waits 300ms then returns 99. Print the result.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>3) Chain async methods</h4>
+          <p>Make <code>AAsync()</code> await <code>BAsync()</code>, and <code>BAsync()</code> await a delay. Print messages so you can see the chain.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>4) Convert sync to async</h4>
+          <p>Start with a sync method that waits using <code>Thread.Sleep</code>. Convert it to async using <code>Task.Delay</code> and return <code>Task</code>.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>5) Forgetting await</h4>
+          <p>Create a method that starts a task but forgets to await it. Observe the output order. Then fix it by adding <code>await</code>.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>6) WhenAll with 3 tasks</h4>
+          <p>Start three tasks with different delays (200ms, 400ms, 700ms). Await them using <code>Task.WhenAll</code>. Print all results.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>7) WhenAny winner</h4>
+          <p>Start two tasks. Use <code>Task.WhenAny</code> to print which one finished first.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>8) Simple stopwatch</h4>
+          <p>Measure time using <code>Stopwatch</code>. Compare awaiting tasks one-by-one vs starting all first and using <code>WhenAll</code>.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>9) Exception handling</h4>
+          <p>Create a method that throws after a delay. Catch the exception at the await line and print the message.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>10) Multiple failures with WhenAll</h4>
+          <p>Create 3 tasks: two throw exceptions, one succeeds. Await <code>WhenAll</code> inside try/catch and print what happens.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>11) CancellationToken basics</h4>
+          <p>Create a loop that prints <code>Working...</code> every 300ms. Cancel after 1 second using <code>CancellationTokenSource.CancelAfter</code>.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>12) Pass the token</h4>
+          <p>Create <code>OuterAsync(token)</code> that calls <code>InnerAsync(token)</code> and passes the token through.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>13) Timeout pattern</h4>
+          <p>Implement a simple timeout using <code>Task.WhenAny</code> between a work task and <code>Task.Delay(timeout)</code>.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>14) Simulate a Web API call</h4>
+          <p>Write a method <code>FetchUserAsync()</code> that waits 700ms and returns a JSON-like string. Call it and print the result.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>15) Read a file asynchronously</h4>
+          <p>Create a text file with a few lines. Use <code>File.ReadAllTextAsync</code> to read it and print the contents.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>16) Write a file asynchronously</h4>
+          <p>Ask the user for a line of text and write it using <code>File.WriteAllTextAsync</code>.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>17) Progress reporting</h4>
+          <p>Create a method that does 10 steps and prints progress (1/10 ... 10/10) with delays. (Hint: keep it simple: just print.)</p>
+        </div>
+
+        <div class="exercise">
+          <h4>18) “Fire and forget” (safe-ish)</h4>
+          <p>Start a background task and log exceptions inside it (try/catch inside the task). Explain in comments why this is risky.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>19) Replace .Result</h4>
+          <p>Find a place where you used <code>.Result</code> in your code. Replace it with <code>await</code> and update the calling method signature.</p>
+        </div>
+
+        <div class="exercise">
+          <h4>20) Mini project: concurrent downloader</h4>
+          <p>Create a list of 5 URLs (use simple ones). Download them using <code>HttpClient.GetStringAsync</code> with <code>Task.WhenAll</code>. Print the length of each response.</p>
+        </div>
+
+        <div class="note">
+          Tip: For file exercises, add <code>using System.IO;</code>. For HTTP exercises, add <code>using System.Net.Http;</code>.
+        </div>
+      </section>
+
+      <div class="footer">
+        <div><b>Quick reference</b></div>
+        <div class="mini">
+          • Async method returns <code>Task</code> or <code>Task&lt;T&gt;</code> • Use <code>await</code> instead of <code>.Wait()</code>/<code>.Result</code> • Prefer real async I/O APIs
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Copy buttons
+    document.querySelectorAll("[data-copy]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const sel = btn.getAttribute("data-copy");
+        const el = document.querySelector(sel);
+        if (!el) return;
+        const text = el.innerText;
+        try{
+          await navigator.clipboard.writeText(text);
+          const old = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(()=> btn.textContent = old, 900);
+        }catch(e){
+          // fallback
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+          const old = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(()=> btn.textContent = old, 900);
+        }
+      });
+    });
+
+    // Scroll-spy (auto-highlight current section)
+    const navLinks = Array.from(document.querySelectorAll("#nav a"));
+    const sections = navLinks
+      .map(a => document.querySelector(a.getAttribute("href")))
+      .filter(Boolean);
+
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(a => a.classList.remove("active"));
+          const id = "#" + entry.target.id;
+          const current = navLinks.find(a => a.getAttribute("href") === id);
+          if (current) current.classList.add("active");
+        }
+      });
+    }, { rootMargin: "-35% 0px -55% 0px", threshold: 0.01 });
+
+    sections.forEach(sec => obs.observe(sec));
+  </script>
+</body>
+</html>

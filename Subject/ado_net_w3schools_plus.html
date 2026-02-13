@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>ADO.NET (W3Schools+ Style) — Complete Beginner-Friendly Guide</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#111a33;
+      --muted:#9fb2d1;
+      --text:#eaf0ff;
+      --brand:#38bdf8;
+      --brand2:#a78bfa;
+      --ok:#34d399;
+      --warn:#fbbf24;
+      --bad:#fb7185;
+      --code:#0b1226;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1200px 800px at 20% -10%, rgba(56,189,248,.25), transparent 60%),
+                  radial-gradient(900px 600px at 110% 10%, rgba(167,139,250,.18), transparent 55%),
+                  linear-gradient(180deg, #070b16, #0b1020);
+      color:var(--text);
+      line-height:1.6;
+    }
+    a{color:var(--brand); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .topbar{
+      position:sticky; top:0; z-index:10;
+      background: rgba(7,11,22,.78);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--border);
+    }
+    .topbar-inner{
+      max-width:1200px; margin:0 auto;
+      display:flex; align-items:center; gap:14px;
+      padding:14px 18px;
+    }
+    .logo{
+      display:flex; align-items:center; gap:10px; font-weight:800;
+      letter-spacing:.2px;
+    }
+    .badge{
+      font-size:12px; padding:4px 10px; border-radius:999px;
+      background: linear-gradient(90deg, rgba(56,189,248,.18), rgba(167,139,250,.18));
+      border:1px solid var(--border);
+      color:var(--muted);
+    }
+    .search{
+      margin-left:auto;
+      display:flex; align-items:center; gap:10px;
+      width:min(520px, 100%);
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:8px 12px;
+    }
+    .search input{
+      width:100%; border:0; outline:none; background:transparent; color:var(--text);
+      font-size:14px;
+    }
+    .layout{max-width:1200px; margin:0 auto; display:grid; grid-template-columns: 300px 1fr; gap:18px; padding:18px;}
+    @media (max-width: 980px){ .layout{grid-template-columns:1fr} .sidebar{position:static !important; height:auto !important} }
+    .sidebar{
+      position:sticky; top:70px; height: calc(100dvh - 90px);
+      overflow:auto;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      border-radius:16px;
+      padding:14px;
+      box-shadow: var(--shadow);
+    }
+    .sidebar h3{margin:8px 10px 6px; font-size:14px; color:var(--muted); letter-spacing:.4px; text-transform:uppercase}
+    .nav a{
+      display:block; padding:10px 10px; border-radius:12px;
+      color:var(--text); border:1px solid transparent;
+      transition: .15s ease;
+    }
+    .nav a small{color:var(--muted); display:block; font-size:12px; margin-top:2px}
+    .nav a:hover{background:rgba(56,189,248,.10); border-color:rgba(56,189,248,.20)}
+    .nav a.active{background:rgba(167,139,250,.14); border-color:rgba(167,139,250,.25)}
+    .content{min-width:0}
+    .hero{
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius:18px;
+      padding:20px 20px 16px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .hero h1{margin:0 0 6px; font-size:34px; line-height:1.2}
+    .hero p{margin:6px 0 0; color:var(--muted); max-width:80ch}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px}
+    @media (max-width: 980px){ .grid2{grid-template-columns:1fr} }
+    .card{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      border-radius:16px;
+      padding:16px;
+      box-shadow: var(--shadow);
+    }
+    .card h2{margin:0 0 8px; font-size:20px}
+    .card h3{margin:12px 0 6px; font-size:16px}
+    .muted{color:var(--muted)}
+    .pillrow{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+    .pill{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      padding:6px 10px;
+      border-radius:999px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .callout{
+      border-radius:16px;
+      border:1px solid var(--border);
+      padding:14px 14px 12px;
+      background: rgba(56,189,248,.10);
+      margin:12px 0;
+    }
+    .callout.ok{background: rgba(52,211,153,.10)}
+    .callout.warn{background: rgba(251,191,36,.10)}
+    .callout.bad{background: rgba(251,113,133,.10)}
+    .callout b{display:block; margin-bottom:6px}
+    .kbd{font-family:var(--mono); font-size:12px; padding:2px 6px; border-radius:6px; background:rgba(255,255,255,.06); border:1px solid var(--border)}
+    pre{
+      margin:12px 0;
+      background: linear-gradient(180deg, rgba(11,18,38,.92), rgba(11,18,38,.78));
+      border:1px solid rgba(56,189,248,.18);
+      border-radius:16px;
+      padding:14px;
+      overflow:auto;
+      box-shadow: var(--shadow);
+    }
+    code{font-family:var(--mono); font-size:13px}
+    .codehead{
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:10px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .copybtn{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:6px 10px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:12px;
+    }
+    .copybtn:hover{background:rgba(255,255,255,.08)}
+    .inline{
+      font-family:var(--mono);
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:1px 6px;
+      font-size:.95em;
+    }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      margin:10px 0 14px;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+    }
+    th, td{
+      padding:10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      vertical-align:top;
+      font-size:14px;
+    }
+    th{color:var(--muted); text-align:left; background:rgba(255,255,255,.04)}
+    tr:last-child td{border-bottom:0}
+    .diagram{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:12px;
+      overflow:auto;
+      box-shadow: var(--shadow);
+      margin:12px 0;
+    }
+    .section{scroll-margin-top: 90px;}
+    .footer{
+      margin:22px 0 10px;
+      color:var(--muted);
+      text-align:center;
+      font-size:13px;
+    }
+    .chips{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px}
+    .chip{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:10px 12px;
+      background:rgba(255,255,255,.03);
+      min-width: 220px;
+    }
+    .chip b{display:block}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="logo">
+        <span style="width:34px;height:34px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg, rgba(56,189,248,.20), rgba(167,139,250,.20)); border:1px solid var(--border);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 7.5C4 6.12 5.12 5 6.5 5h11C19.88 5 21 6.12 21 7.5v9c0 1.38-1.12 2.5-2.5 2.5h-11C5.12 19 4 17.88 4 16.5v-9Z" stroke="rgba(234,240,255,.9)" stroke-width="1.6"/>
+            <path d="M7 9h10M7 12h7M7 15h10" stroke="rgba(56,189,248,.95)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <div>
+          <div style="font-size:14px; line-height:1.1">ADO.NET</div>
+          <div style="font-size:12px;color:var(--muted); line-height:1.1">W3Schools+ Style Guide</div>
+        </div>
+      </div>
+      <span class="badge">C# + SQL Server • From Connection to Stored Procedures</span>
+      <div class="search" title="Search inside this page (Ctrl + K)">
+        <span style="opacity:.75">🔎</span>
+        <input id="searchBox" placeholder="Search topics (e.g., SqlConnection, ExecuteReader, stored procedure)..." />
+        <span class="kbd">Ctrl</span><span class="kbd">K</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h3>Contents</h3>
+      <nav class="nav" id="nav">
+        <a href="#intro">1) What is ADO.NET?<small>Why it exists + where it fits</small></a>
+        <a href="#flow">2) How it works (Flow diagram)<small>Connected vs Disconnected model</small></a>
+        <a href="#setup">3) Setup checklist<small>SQL Server + connection string</small></a>
+        <a href="#schema">4) Sample DB schema<small>Tables + stored procedures</small></a>
+        <a href="#connect">5) Connect + run SELECT<small>SqlConnection + SqlCommand + Reader</small></a>
+        <a href="#params">6) Parameterized queries<small>Stop SQL injection</small></a>
+        <a href="#insert">7) Insert/Update/Delete<small>ExecuteNonQuery</small></a>
+        <a href="#scalar">8) Single value queries<small>ExecuteScalar</small></a>
+        <a href="#datatable">9) DataTable + SqlDataAdapter<small>Disconnected style</small></a>
+        <a href="#sp">10) Stored procedures (End-to-end)<small>Input + Output + Return rows</small></a>
+        <a href="#tx">11) Transactions<small>Commit/Rollback safely</small></a>
+        <a href="#async">12) Async ADO.NET<small>Keep UI responsive</small></a>
+        <a href="#errors">13) Error handling + best practices<small>using, timeouts, pooling</small></a>
+        <a href="#mini">14) Mini project<small>Console CRUD in 1 file</small></a>
+        <a href="#exercises">15) Practice exercises<small>Beginner → Advanced</small></a>
+        <a href="#faq">16) FAQ & troubleshooting<small>Most common errors</small></a>
+      </nav>
+      <div class="callout ok" style="margin-top:12px">
+        <b>Tip</b>
+        Use <span class="inline">Ctrl + K</span> to search inside this page quickly.
+      </div>
+    </aside>
+
+    <main class="content">
+      <section class="hero">
+        <h1>ADO.NET — From Database Connection to Stored Procedures</h1>
+        <p>
+          A practical, step-by-step guide to reading and writing data in <b>SQL Server</b> using <b>ADO.NET</b> in C#.
+          You’ll learn the <b>core classes</b>, the <b>correct coding patterns</b>, and complete working examples.
+        </p>
+        <div class="pillrow">
+          <span class="pill">SqlConnection</span>
+          <span class="pill">SqlCommand</span>
+          <span class="pill">SqlDataReader</span>
+          <span class="pill">SqlDataAdapter</span>
+          <span class="pill">DataTable</span>
+          <span class="pill">Stored Procedures</span>
+          <span class="pill">Transactions</span>
+          <span class="pill">Async</span>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <h2>What you’ll build</h2>
+            <ul class="muted" style="margin:8px 0 0; padding-left:18px">
+              <li>A sample DB (<span class="inline">TrainingDB</span>) with an <span class="inline">Employees</span> table</li>
+              <li>SELECT/INSERT/UPDATE/DELETE using ADO.NET</li>
+              <li>Stored procedures with input + output parameters</li>
+              <li>A tiny console “Employee Manager” mini-project</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h2>Prerequisites</h2>
+            <div class="chips">
+              <div class="chip"><b>IDE</b><span class="muted">Visual Studio / VS Code</span></div>
+              <div class="chip"><b>.NET</b><span class="muted">.NET 6/7/8 (any)</span></div>
+              <div class="chip"><b>Database</b><span class="muted">SQL Server (Express ok)</span></div>
+              <div class="chip"><b>NuGet</b><span class="muted">Microsoft.Data.SqlClient</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="intro" class="section card" style="margin-top:16px">
+        <h2>1) What is ADO.NET?</h2>
+        <p class="muted">
+          <b>ADO.NET</b> is the .NET data access technology used to connect to databases, run SQL queries,
+          and read/write data.
+        </p>
+
+        <table>
+          <tr>
+            <th>Think of it like this</th>
+            <th>Meaning</th>
+          </tr>
+          <tr>
+            <td><b>Your C# code</b></td>
+            <td class="muted">Requests data or saves data</td>
+          </tr>
+          <tr>
+            <td><b>ADO.NET</b></td>
+            <td class="muted">Bridge (API) that talks to the database securely & efficiently</td>
+          </tr>
+          <tr>
+            <td><b>SQL Server</b></td>
+            <td class="muted">Stores tables, rows, indexes, stored procedures</td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <b>Where ADO.NET fits in real applications</b>
+          <div class="muted">
+            Many enterprise apps use ORM frameworks like EF Core. Still, ADO.NET is widely used for:
+            <ul style="margin:8px 0 0; padding-left:18px">
+              <li>Performance-critical queries</li>
+              <li>Calling stored procedures</li>
+              <li>Legacy systems</li>
+              <li>Microservices that need fast, controlled SQL</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="flow" class="section card" style="margin-top:16px">
+        <h2>2) How ADO.NET works (with diagrams)</h2>
+
+        <h3>2.1 Connected Model (Fast streaming)</h3>
+        <p class="muted">
+          You open the connection, stream rows using a reader, then close the connection quickly.
+        </p>
+
+        <div class="diagram" aria-label="Connected model diagram">
+          <svg width="100%" viewBox="0 0 980 260" role="img">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="rgba(56,189,248,.65)"/>
+                <stop offset="1" stop-color="rgba(167,139,250,.65)"/>
+              </linearGradient>
+              <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="rgba(0,0,0,.45)"/>
+              </filter>
+            </defs>
+            <rect x="14" y="18" width="952" height="224" rx="18" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.10)"/>
+            <g filter="url(#sh)">
+              <rect x="60" y="80" width="220" height="90" rx="16" fill="rgba(11,18,38,.9)" stroke="rgba(56,189,248,.35)"/>
+              <text x="170" y="118" text-anchor="middle" fill="white" font-size="18" font-family="Segoe UI">C# App</text>
+              <text x="170" y="145" text-anchor="middle" fill="rgba(159,178,209,.95)" font-size="12" font-family="Segoe UI">SqlCommand + Reader</text>
+
+              <rect x="380" y="80" width="220" height="90" rx="16" fill="rgba(11,18,38,.9)" stroke="rgba(167,139,250,.35)"/>
+              <text x="490" y="118" text-anchor="middle" fill="white" font-size="18" font-family="Segoe UI">ADO.NET</text>
+              <text x="490" y="145" text-anchor="middle" fill="rgba(159,178,209,.95)" font-size="12" font-family="Segoe UI">Provider (SqlClient)</text>
+
+              <rect x="700" y="80" width="220" height="90" rx="16" fill="rgba(11,18,38,.9)" stroke="rgba(52,211,153,.35)"/>
+              <text x="810" y="118" text-anchor="middle" fill="white" font-size="18" font-family="Segoe UI">SQL Server</text>
+              <text x="810" y="145" text-anchor="middle" fill="rgba(159,178,209,.95)" font-size="12" font-family="Segoe UI">Tables / SP / Index</text>
+
+              <path d="M280 125 L380 125" stroke="url(#g1)" stroke-width="6" stroke-linecap="round"/>
+              <path d="M600 125 L700 125" stroke="url(#g1)" stroke-width="6" stroke-linecap="round"/>
+              <polygon points="370,125 352,114 352,136" fill="rgba(234,240,255,.85)"/>
+              <polygon points="690,125 672,114 672,136" fill="rgba(234,240,255,.85)"/>
+            </g>
+            <text x="490" y="216" text-anchor="middle" fill="rgba(159,178,209,.95)" font-size="13" font-family="Segoe UI">
+              Connected model: Open → ExecuteReader (stream rows) → Close
+            </text>
+          </svg>
+        </div>
+
+        <h3>2.2 Disconnected Model (Work with data in memory)</h3>
+        <p class="muted">
+          You fetch data into a <span class="inline">DataTable</span>/<span class="inline">DataSet</span>, close the connection,
+          then work with the data in memory.
+        </p>
+
+        <div class="diagram" aria-label="Disconnected model diagram">
+          <svg width="100%" viewBox="0 0 980 300" role="img">
+            <defs>
+              <linearGradient id="g2" x1="0" x2="1">
+                <stop offset="0" stop-color="rgba(52,211,153,.65)"/>
+                <stop offset="1" stop-color="rgba(56,189,248,.65)"/>
+              </linearGradient>
+            </defs>
+            <rect x="14" y="18" width="952" height="264" rx="18" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.10)"/>
+            <rect x="60" y="90" width="240" height="92" rx="16" fill="rgba(11,18,38,.9)" stroke="rgba(56,189,248,.35)"/>
+            <text x="180" y="126" text-anchor="middle" fill="white" font-size="18" font-family="Segoe UI">SqlDataAdapter</text>
+            <text x="180" y="154" text-anchor="middle" fill="rgba(159,178,209,.95)" font-size="12" font-family="Segoe UI">Fill(DataTable)</text>
+
+            <rect x="380" y="70" width="240" height="132" rx="16" fill="rgba(11,18,38,.9)" stroke="rgba(167,139,250,.35)"/>
+            <text x="500" y="110" text-anchor="middle" fill="white" font-size="18" font-family="Segoe UI">DataTable</text>
+            <text x="500" y="136" text-anchor="middle" fill="rgba(159,178,209,.95)" font-size="12" font-family="Segoe UI">Rows in memory</text>
+            <rect x="420" y="148" width="160" height="34" rx="10" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.10)"/>
+            <text x="500" y="170" text-anchor="middle" fill="rgba(234,240,255,.9)" font-size="12" font-family="Segoe UI">Filter/Sort/Edit</text>
+
+            <rect x="700" y="90" width="220" height="92" rx="16" fill="rgba(11,18,38,.9)" stroke="rgba(52,211,153,.35)"/>
+            <text x="810" y="126" text-anchor="middle" fill="white" font-size="18" font-family="Segoe UI">SQL Server</text>
+            <text x="810" y="154" text-anchor="middle" fill="rgba(159,178,209,.95)" font-size="12" font-family="Segoe UI">Query results</text>
+
+            <path d="M300 136 L380 136" stroke="url(#g2)" stroke-width="6" stroke-linecap="round"/>
+            <path d="M620 136 L700 136" stroke="url(#g2)" stroke-width="6" stroke-linecap="round"/>
+            <polygon points="370,136 352,125 352,147" fill="rgba(234,240,255,.85)"/>
+            <polygon points="690,136 672,125 672,147" fill="rgba(234,240,255,.85)"/>
+
+            <text x="490" y="252" text-anchor="middle" fill="rgba(159,178,209,.95)" font-size="13" font-family="Segoe UI">
+              Disconnected model: Fill → Close connection → Work in memory
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <section id="setup" class="section card" style="margin-top:16px">
+        <h2>3) Setup checklist</h2>
+
+        <h3>3.1 Install / choose SQL Server</h3>
+        <ul class="muted" style="margin:8px 0 0; padding-left:18px">
+          <li>SQL Server Express or Developer Edition is enough.</li>
+          <li>Install SQL Server Management Studio (SSMS) for running scripts.</li>
+        </ul>
+
+        <h3>3.2 Choose your SQL Client library</h3>
+        <p class="muted">
+          Use <b>Microsoft.Data.SqlClient</b> (recommended) or <b>System.Data.SqlClient</b> (legacy).
+        </p>
+
+        <div class="callout ok">
+          <b>NuGet</b>
+          <div class="muted">Install: <span class="inline">Microsoft.Data.SqlClient</span></div>
+        </div>
+
+        <h3>3.3 Connection string (local SQL Server)</h3>
+        <p class="muted">
+          Use one of these patterns (edit server name as needed).
+        </p>
+
+        <pre><div class="codehead"><span>Connection string examples</span><button class="copybtn" data-copy="cs1">Copy</button></div><code id="cs1"># Windows Authentication (Integrated Security)
+Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;
+
+# SQL Login (username/password)
+Server=localhost;Database=TrainingDB;User Id=sa;Password=YourStrongPassword;TrustServerCertificate=True;</code></pre>
+
+        <div class="callout warn">
+          <b>Important</b>
+          <div class="muted">
+            In real projects, don’t hardcode passwords in code.
+            Store them in <span class="inline">appsettings.json</span>, environment variables, or secret managers.
+          </div>
+        </div>
+      </section>
+
+      <section id="schema" class="section card" style="margin-top:16px">
+        <h2>4) Sample database schema (SQL script)</h2>
+        <p class="muted">
+          Run this in SSMS to create <span class="inline">TrainingDB</span>, one table, and stored procedures.
+        </p>
+
+        <div class="diagram" aria-label="ER diagram">
+          <svg width="100%" viewBox="0 0 980 260" role="img">
+            <rect x="14" y="18" width="952" height="224" rx="18" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.10)"/>
+            <rect x="110" y="70" width="320" height="140" rx="16" fill="rgba(11,18,38,.92)" stroke="rgba(56,189,248,.35)"/>
+            <text x="270" y="100" text-anchor="middle" fill="white" font-size="18" font-family="Segoe UI">Employees</text>
+            <text x="140" y="130" fill="rgba(234,240,255,.9)" font-size="13" font-family="Segoe UI">EmployeeId (PK)</text>
+            <text x="140" y="152" fill="rgba(159,178,209,.95)" font-size="13" font-family="Segoe UI">FullName</text>
+            <text x="140" y="174" fill="rgba(159,178,209,.95)" font-size="13" font-family="Segoe UI">Department</text>
+            <text x="140" y="196" fill="rgba(159,178,209,.95)" font-size="13" font-family="Segoe UI">Salary</text>
+
+            <rect x="560" y="70" width="320" height="140" rx="16" fill="rgba(11,18,38,.92)" stroke="rgba(167,139,250,.35)"/>
+            <text x="720" y="100" text-anchor="middle" fill="white" font-size="18" font-family="Segoe UI">Stored Procedures</text>
+            <text x="585" y="130" fill="rgba(159,178,209,.95)" font-size="13" font-family="Segoe UI">sp_AddEmployee</text>
+            <text x="585" y="152" fill="rgba(159,178,209,.95)" font-size="13" font-family="Segoe UI">sp_GetEmployeeById</text>
+            <text x="585" y="174" fill="rgba(159,178,209,.95)" font-size="13" font-family="Segoe UI">sp_UpdateSalary</text>
+            <text x="585" y="196" fill="rgba(159,178,209,.95)" font-size="13" font-family="Segoe UI">sp_CountEmployees (Output)</text>
+
+            <path d="M430 140 L560 140" stroke="rgba(52,211,153,.6)" stroke-width="6" stroke-linecap="round"/>
+            <polygon points="552,140 534,129 534,151" fill="rgba(234,240,255,.85)"/>
+            <text x="495" y="125" text-anchor="middle" fill="rgba(159,178,209,.95)" font-size="12" font-family="Segoe UI">called by</text>
+          </svg>
+        </div>
+
+        <pre><div class="codehead"><span>SQL Script: create DB + table + SPs</span><button class="copybtn" data-copy="sql1">Copy</button></div><code id="sql1">-- 1) Create database
+IF DB_ID('TrainingDB') IS NULL
+BEGIN
+  CREATE DATABASE TrainingDB;
+END
+GO
+
+USE TrainingDB;
+GO
+
+-- 2) Table
+IF OBJECT_ID('dbo.Employees', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.Employees (
+    EmployeeId INT IDENTITY(1,1) PRIMARY KEY,
+    FullName   NVARCHAR(100) NOT NULL,
+    Department NVARCHAR(60)  NOT NULL,
+    Salary     DECIMAL(12,2) NOT NULL
+  );
+END
+GO
+
+-- 3) Sample data (optional)
+IF NOT EXISTS (SELECT 1 FROM dbo.Employees)
+BEGIN
+  INSERT INTO dbo.Employees(FullName, Department, Salary) VALUES
+  ('Asha Kumar', 'IT', 65000),
+  ('Ravi Sharma', 'HR', 45000),
+  ('Meera Iyer', 'Finance', 70000);
+END
+GO
+
+-- 4) Stored procedure: add employee (returns new EmployeeId)
+CREATE OR ALTER PROCEDURE dbo.sp_AddEmployee
+  @FullName NVARCHAR(100),
+  @Department NVARCHAR(60),
+  @Salary DECIMAL(12,2),
+  @NewEmployeeId INT OUTPUT
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  INSERT INTO dbo.Employees(FullName, Department, Salary)
+  VALUES (@FullName, @Department, @Salary);
+
+  SET @NewEmployeeId = SCOPE_IDENTITY();
+END
+GO
+
+-- 5) Stored procedure: get employee by id
+CREATE OR ALTER PROCEDURE dbo.sp_GetEmployeeById
+  @EmployeeId INT
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  SELECT EmployeeId, FullName, Department, Salary
+  FROM dbo.Employees
+  WHERE EmployeeId = @EmployeeId;
+END
+GO
+
+-- 6) Stored procedure: update salary
+CREATE OR ALTER PROCEDURE dbo.sp_UpdateSalary
+  @EmployeeId INT,
+  @Salary DECIMAL(12,2)
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  UPDATE dbo.Employees
+  SET Salary = @Salary
+  WHERE EmployeeId = @EmployeeId;
+END
+GO
+
+-- 7) Stored procedure: count employees (Output)
+CREATE OR ALTER PROCEDURE dbo.sp_CountEmployees
+  @Total INT OUTPUT
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  SELECT @Total = COUNT(*) FROM dbo.Employees;
+END
+GO</code></pre>
+      </section>
+
+      <section id="connect" class="section card" style="margin-top:16px">
+        <h2>5) Connect to DB + run SELECT (SqlDataReader)</h2>
+
+        <h3>5.1 The 3 most common ADO.NET classes</h3>
+        <table>
+          <tr><th>Class</th><th>What it does</th></tr>
+          <tr><td><b>SqlConnection</b></td><td class="muted">Opens a connection to SQL Server</td></tr>
+          <tr><td><b>SqlCommand</b></td><td class="muted">Holds SQL query or stored procedure + parameters</td></tr>
+          <tr><td><b>SqlDataReader</b></td><td class="muted">Reads rows forward-only (fast streaming)</td></tr>
+        </table>
+
+        <div class="callout ok">
+          <b>Golden rule</b>
+          <div class="muted">Always use <span class="inline">using</span> blocks so connections are closed even if errors happen.</div>
+        </div>
+
+        <pre><div class="codehead"><span>C# (Console): SELECT and print rows</span><button class="copybtn" data-copy="cs_select">Copy</button></div><code id="cs_select">using Microsoft.Data.SqlClient;
+
+class Program
+{
+    static void Main()
+    {
+        string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+        string sql = "SELECT EmployeeId, FullName, Department, Salary FROM dbo.Employees ORDER BY EmployeeId";
+
+        using (var con = new SqlConnection(cs))
+        using (var cmd = new SqlCommand(sql, con))
+        {
+            con.Open();
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int id = reader.GetInt32(0);
+                    string name = reader.GetString(1);
+                    string dept = reader.GetString(2);
+                    decimal salary = reader.GetDecimal(3);
+
+                    Console.WriteLine($"{id} | {name} | {dept} | {salary}");
+                }
+            }
+        }
+    }
+}</code></pre>
+
+        <div class="callout">
+          <b>What happens internally (simple)</b>
+          <div class="muted">
+            1) <span class="inline">SqlConnection</span> opens a network channel to SQL Server → 2) SQL is sent →
+            3) SQL Server returns rows → 4) <span class="inline">SqlDataReader</span> streams them one by one.
+          </div>
+        </div>
+      </section>
+
+      <section id="params" class="section card" style="margin-top:16px">
+        <h2>6) Parameterized queries (must-know)</h2>
+        <p class="muted">
+          Parameters prevent <b>SQL Injection</b> and avoid breaking queries when text contains quotes.
+        </p>
+
+        <pre><div class="codehead"><span>C#: Search by department safely</span><button class="copybtn" data-copy="cs_params">Copy</button></div><code id="cs_params">using Microsoft.Data.SqlClient;
+
+string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+
+Console.Write("Enter Department (e.g., IT): ");
+string dept = Console.ReadLine() ?? "";
+
+string sql = @"SELECT EmployeeId, FullName, Salary
+               FROM dbo.Employees
+               WHERE Department = @dept
+               ORDER BY Salary DESC";
+
+using var con = new SqlConnection(cs);
+using var cmd = new SqlCommand(sql, con);
+
+// ✅ Add parameter
+cmd.Parameters.AddWithValue("@dept", dept);
+
+con.Open();
+using var r = cmd.ExecuteReader();
+while (r.Read())
+{
+    Console.WriteLine($"{r["EmployeeId"]} | {r["FullName"]} | {r["Salary"]}");
+}</code></pre>
+
+        <div class="callout warn">
+          <b>Note</b>
+          <div class="muted">
+            <span class="inline">AddWithValue</span> is ok for simple training examples.
+            In production, prefer <span class="inline">SqlParameter</span> with explicit types for best performance.
+          </div>
+        </div>
+      </section>
+
+      <section id="insert" class="section card" style="margin-top:16px">
+        <h2>7) Insert / Update / Delete using ExecuteNonQuery()</h2>
+        <p class="muted">
+          Use <span class="inline">ExecuteNonQuery()</span> when you don’t need a result set.
+          It returns the number of rows affected.
+        </p>
+
+        <pre><div class="codehead"><span>C#: Insert a new employee</span><button class="copybtn" data-copy="cs_insert">Copy</button></div><code id="cs_insert">using Microsoft.Data.SqlClient;
+
+string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+string sql = @"INSERT INTO dbo.Employees(FullName, Department, Salary)
+               VALUES (@name, @dept, @salary)";
+
+Console.Write("Name: ");  string name = Console.ReadLine() ?? "";
+Console.Write("Dept: ");  string dept = Console.ReadLine() ?? "";
+Console.Write("Salary: "); decimal salary = decimal.Parse(Console.ReadLine() ?? "0");
+
+using var con = new SqlConnection(cs);
+using var cmd = new SqlCommand(sql, con);
+
+cmd.Parameters.AddWithValue("@name", name);
+cmd.Parameters.AddWithValue("@dept", dept);
+cmd.Parameters.AddWithValue("@salary", salary);
+
+con.Open();
+int rows = cmd.ExecuteNonQuery();
+
+Console.WriteLine(rows == 1 ? "✅ Inserted" : "⚠️ Not inserted");</code></pre>
+
+        <pre><div class="codehead"><span>C#: Update salary</span><button class="copybtn" data-copy="cs_update">Copy</button></div><code id="cs_update">using Microsoft.Data.SqlClient;
+
+string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+string sql = @"UPDATE dbo.Employees SET Salary=@salary WHERE EmployeeId=@id";
+
+Console.Write("EmployeeId: "); int id = int.Parse(Console.ReadLine() ?? "0");
+Console.Write("New Salary: ");  decimal salary = decimal.Parse(Console.ReadLine() ?? "0");
+
+using var con = new SqlConnection(cs);
+using var cmd = new SqlCommand(sql, con);
+
+cmd.Parameters.AddWithValue("@id", id);
+cmd.Parameters.AddWithValue("@salary", salary);
+
+con.Open();
+int rows = cmd.ExecuteNonQuery();
+
+Console.WriteLine($"Updated rows: {rows}");</code></pre>
+
+        <pre><div class="codehead"><span>C#: Delete employee</span><button class="copybtn" data-copy="cs_delete">Copy</button></div><code id="cs_delete">using Microsoft.Data.SqlClient;
+
+string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+string sql = @"DELETE FROM dbo.Employees WHERE EmployeeId=@id";
+
+Console.Write("EmployeeId to delete: "); int id = int.Parse(Console.ReadLine() ?? "0");
+
+using var con = new SqlConnection(cs);
+using var cmd = new SqlCommand(sql, con);
+
+cmd.Parameters.AddWithValue("@id", id);
+
+con.Open();
+int rows = cmd.ExecuteNonQuery();
+
+Console.WriteLine(rows == 1 ? "🗑️ Deleted" : "⚠️ Not found");</code></pre>
+      </section>
+
+      <section id="scalar" class="section card" style="margin-top:16px">
+        <h2>8) ExecuteScalar() — when you need a single value</h2>
+        <p class="muted">
+          Use <span class="inline">ExecuteScalar()</span> for a single value like COUNT, SUM, MAX.
+        </p>
+
+        <pre><div class="codehead"><span>C#: Count employees</span><button class="copybtn" data-copy="cs_scalar">Copy</button></div><code id="cs_scalar">using Microsoft.Data.SqlClient;
+
+string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+string sql = "SELECT COUNT(*) FROM dbo.Employees";
+
+using var con = new SqlConnection(cs);
+using var cmd = new SqlCommand(sql, con);
+
+con.Open();
+object result = cmd.ExecuteScalar();  // returns object
+int total = Convert.ToInt32(result);
+
+Console.WriteLine($"Total employees: {total}");</code></pre>
+      </section>
+
+      <section id="datatable" class="section card" style="margin-top:16px">
+        <h2>9) DataTable + SqlDataAdapter (Disconnected style)</h2>
+        <p class="muted">
+          If you want to load data into memory and do sorting/filtering on the C# side, use a <span class="inline">DataTable</span>.
+        </p>
+
+        <pre><div class="codehead"><span>C#: Load into DataTable</span><button class="copybtn" data-copy="cs_dt">Copy</button></div><code id="cs_dt">using Microsoft.Data.SqlClient;
+using System.Data;
+
+string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+string sql = "SELECT EmployeeId, FullName, Department, Salary FROM dbo.Employees";
+
+using var con = new SqlConnection(cs);
+using var da = new SqlDataAdapter(sql, con);
+
+var table = new DataTable();
+da.Fill(table);
+
+Console.WriteLine($"Rows loaded: {table.Rows.Count}");
+
+foreach (DataRow row in table.Rows)
+{
+    Console.WriteLine($"{row["EmployeeId"]} | {row["FullName"]} | {row["Department"]} | {row["Salary"]}");
+}</code></pre>
+
+        <div class="callout">
+          <b>When to use which?</b>
+          <div class="muted">
+            <ul style="margin:8px 0 0; padding-left:18px">
+              <li><b>Reader</b>: fastest, minimal memory, stream rows</li>
+              <li><b>DataTable</b>: easy to bind to UI grids, filter/sort in memory</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="sp" class="section card" style="margin-top:16px">
+        <h2>10) Stored procedures — complete end-to-end examples</h2>
+        <p class="muted">
+          Stored procedures are database-side programs. ADO.NET calls them using <span class="inline">CommandType.StoredProcedure</span>.
+        </p>
+
+        <h3>10.1 Call a stored procedure that returns rows</h3>
+        <pre><div class="codehead"><span>C#: Call sp_GetEmployeeById</span><button class="copybtn" data-copy="cs_sp_get">Copy</button></div><code id="cs_sp_get">using Microsoft.Data.SqlClient;
+
+string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+
+Console.Write("EmployeeId: ");
+int id = int.Parse(Console.ReadLine() ?? "0");
+
+using var con = new SqlConnection(cs);
+using var cmd = new SqlCommand("dbo.sp_GetEmployeeById", con);
+
+cmd.CommandType = System.Data.CommandType.StoredProcedure;
+cmd.Parameters.AddWithValue("@EmployeeId", id);
+
+con.Open();
+using var r = cmd.ExecuteReader();
+
+if (!r.Read())
+{
+    Console.WriteLine("⚠️ No employee found.");
+    return;
+}
+
+Console.WriteLine($"ID: {r["EmployeeId"]}");
+Console.WriteLine($"Name: {r["FullName"]}");
+Console.WriteLine($"Dept: {r["Department"]}");
+Console.WriteLine($"Salary: {r["Salary"]}");</code></pre>
+
+        <h3>10.2 Call a stored procedure with OUTPUT parameter</h3>
+        <pre><div class="codehead"><span>C#: Call sp_CountEmployees (Output)</span><button class="copybtn" data-copy="cs_sp_out">Copy</button></div><code id="cs_sp_out">using Microsoft.Data.SqlClient;
+using System.Data;
+
+string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+
+using var con = new SqlConnection(cs);
+using var cmd = new SqlCommand("dbo.sp_CountEmployees", con);
+
+cmd.CommandType = CommandType.StoredProcedure;
+
+// OUTPUT parameter
+var totalParam = new SqlParameter("@Total", SqlDbType.Int);
+totalParam.Direction = ParameterDirection.Output;
+cmd.Parameters.Add(totalParam);
+
+con.Open();
+cmd.ExecuteNonQuery();
+
+int total = (int)cmd.Parameters["@Total"].Value;
+Console.WriteLine($"Total employees: {total}");</code></pre>
+
+        <h3>10.3 Stored procedure that inserts and returns new ID (OUTPUT)</h3>
+        <pre><div class="codehead"><span>C#: Call sp_AddEmployee (returns new EmployeeId)</span><button class="copybtn" data-copy="cs_sp_add">Copy</button></div><code id="cs_sp_add">using Microsoft.Data.SqlClient;
+using System.Data;
+
+string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+
+Console.Write("Name: "); string name = Console.ReadLine() ?? "";
+Console.Write("Dept: "); string dept = Console.ReadLine() ?? "";
+Console.Write("Salary: "); decimal salary = decimal.Parse(Console.ReadLine() ?? "0");
+
+using var con = new SqlConnection(cs);
+using var cmd = new SqlCommand("dbo.sp_AddEmployee", con);
+
+cmd.CommandType = CommandType.StoredProcedure;
+
+cmd.Parameters.AddWithValue("@FullName", name);
+cmd.Parameters.AddWithValue("@Department", dept);
+cmd.Parameters.AddWithValue("@Salary", salary);
+
+// OUTPUT
+var newIdParam = new SqlParameter("@NewEmployeeId", SqlDbType.Int);
+newIdParam.Direction = ParameterDirection.Output;
+cmd.Parameters.Add(newIdParam);
+
+con.Open();
+cmd.ExecuteNonQuery();
+
+int newId = (int)cmd.Parameters["@NewEmployeeId"].Value;
+Console.WriteLine($"✅ Inserted new employee with ID: {newId}");</code></pre>
+
+        <div class="callout ok">
+          <b>Industry-friendly pattern</b>
+          <div class="muted">
+            Prefer stored procedures for shared logic, auditing, and consistent performance when the DB team manages business rules.
+          </div>
+        </div>
+      </section>
+
+      <section id="tx" class="section card" style="margin-top:16px">
+        <h2>11) Transactions (Commit / Rollback)</h2>
+        <p class="muted">
+          A transaction means: “All steps must succeed together. If one fails, undo everything.”
+        </p>
+
+        <div class="diagram" aria-label="Transaction diagram">
+          <svg width="100%" viewBox="0 0 980 240" role="img">
+            <rect x="14" y="18" width="952" height="204" rx="18" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.10)"/>
+            <rect x="80" y="70" width="260" height="110" rx="16" fill="rgba(11,18,38,.92)" stroke="rgba(56,189,248,.35)"/>
+            <text x="210" y="110" text-anchor="middle" fill="white" font-size="18" font-family="Segoe UI">Begin Tx</text>
+            <text x="210" y="136" text-anchor="middle" fill="rgba(159,178,209,.95)" font-size="12" font-family="Segoe UI">SqlTransaction</text>
+
+            <rect x="360" y="70" width="260" height="110" rx="16" fill="rgba(11,18,38,.92)" stroke="rgba(167,139,250,.35)"/>
+            <text x="490" y="110" text-anchor="middle" fill="white" font-size="18" font-family="Segoe UI">Multiple SQL</text>
+            <text x="490" y="136" text-anchor="middle" fill="rgba(159,178,209,.95)" font-size="12" font-family="Segoe UI">Insert/Update/...</text>
+
+            <rect x="640" y="70" width="260" height="110" rx="16" fill="rgba(11,18,38,.92)" stroke="rgba(52,211,153,.35)"/>
+            <text x="770" y="110" text-anchor="middle" fill="white" font-size="18" font-family="Segoe UI">Commit / Rollback</text>
+            <text x="770" y="136" text-anchor="middle" fill="rgba(159,178,209,.95)" font-size="12" font-family="Segoe UI">All or nothing</text>
+
+            <path d="M340 125 L360 125" stroke="rgba(234,240,255,.85)" stroke-width="4" stroke-linecap="round"/>
+            <path d="M620 125 L640 125" stroke="rgba(234,240,255,.85)" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <pre><div class="codehead"><span>C#: Transaction example</span><button class="copybtn" data-copy="cs_tx">Copy</button></div><code id="cs_tx">using Microsoft.Data.SqlClient;
+
+string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+
+using var con = new SqlConnection(cs);
+con.Open();
+
+using var tx = con.BeginTransaction();
+
+try
+{
+    // 1) Insert
+    using (var insertCmd = new SqlCommand(
+        "INSERT INTO dbo.Employees(FullName, Department, Salary) VALUES (@n,@d,@s)", con, tx))
+    {
+        insertCmd.Parameters.AddWithValue("@n", "Vikram Das");
+        insertCmd.Parameters.AddWithValue("@d", "IT");
+        insertCmd.Parameters.AddWithValue("@s", 80000);
+        insertCmd.ExecuteNonQuery();
+    }
+
+    // 2) Update (example: give HR a raise)
+    using (var updateCmd = new SqlCommand(
+        "UPDATE dbo.Employees SET Salary = Salary + 1000 WHERE Department = @dept", con, tx))
+    {
+        updateCmd.Parameters.AddWithValue("@dept", "HR");
+        updateCmd.ExecuteNonQuery();
+    }
+
+    tx.Commit();
+    Console.WriteLine("✅ Transaction committed.");
+}
+catch (Exception ex)
+{
+    tx.Rollback();
+    Console.WriteLine("❌ Transaction rolled back: " + ex.Message);
+}</code></pre>
+      </section>
+
+      <section id="async" class="section card" style="margin-top:16px">
+        <h2>12) Async ADO.NET (recommended for UI/Web apps)</h2>
+        <p class="muted">
+          Async methods keep apps responsive while the database call is running.
+        </p>
+
+        <pre><div class="codehead"><span>C#: Async SELECT</span><button class="copybtn" data-copy="cs_async">Copy</button></div><code id="cs_async">using Microsoft.Data.SqlClient;
+
+string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+string sql = "SELECT TOP 10 EmployeeId, FullName FROM dbo.Employees ORDER BY EmployeeId DESC";
+
+using var con = new SqlConnection(cs);
+using var cmd = new SqlCommand(sql, con);
+
+await con.OpenAsync();
+
+using var r = await cmd.ExecuteReaderAsync();
+while (await r.ReadAsync())
+{
+    Console.WriteLine($"{r.GetInt32(0)} | {r.GetString(1)}");
+}</code></pre>
+
+        <div class="callout warn">
+          <b>Note</b>
+          <div class="muted">
+            In console apps, use <span class="inline">static async Task Main()</span> for async.
+            In ASP.NET Core, prefer async for DB calls.
+          </div>
+        </div>
+      </section>
+
+      <section id="errors" class="section card" style="margin-top:16px">
+        <h2>13) Error handling + best practices</h2>
+
+        <h3>13.1 Best practice checklist</h3>
+        <table>
+          <tr><th>Practice</th><th>Why it matters</th></tr>
+          <tr><td><b>using blocks</b></td><td class="muted">Closes connections reliably (even during exceptions)</td></tr>
+          <tr><td><b>Parameterized queries</b></td><td class="muted">Prevents SQL injection + avoids quoting issues</td></tr>
+          <tr><td><b>Short-lived connections</b></td><td class="muted">Connection pooling works best this way</td></tr>
+          <tr><td><b>Timeouts</b></td><td class="muted">Avoid hanging forever</td></tr>
+          <tr><td><b>Separate SQL from UI</b></td><td class="muted">Cleaner, testable design</td></tr>
+        </table>
+
+        <h3>13.2 Safe error handling pattern</h3>
+        <pre><div class="codehead"><span>C#: try/catch + user-friendly message</span><button class="copybtn" data-copy="cs_try">Copy</button></div><code id="cs_try">using Microsoft.Data.SqlClient;
+
+try
+{
+    using var con = new SqlConnection("Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;");
+    using var cmd = new SqlCommand("SELECT 1", con);
+
+    con.Open();
+    var x = cmd.ExecuteScalar();
+
+    Console.WriteLine("✅ DB connected.");
+}
+catch (SqlException ex)
+{
+    // Database related (login failed, network, syntax error...)
+    Console.WriteLine("❌ Database error: " + ex.Message);
+}
+catch (Exception ex)
+{
+    // Any other error
+    Console.WriteLine("❌ Unexpected error: " + ex.Message);
+}</code></pre>
+
+        <div class="callout bad">
+          <b>Common mistakes</b>
+          <div class="muted">
+            <ul style="margin:8px 0 0; padding-left:18px">
+              <li>Forgetting to open the connection (<span class="inline">con.Open()</span>)</li>
+              <li>Not using parameters (building SQL by string concatenation)</li>
+              <li>Keeping the connection open for too long</li>
+              <li>Mixing UI logic and SQL logic in the same method</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="mini" class="section card" style="margin-top:16px">
+        <h2>14) Mini Project — Employee Manager (single-file console app)</h2>
+        <p class="muted">
+          This example demonstrates: List → Add (Stored Procedure) → Count (Stored Procedure Output).
+        </p>
+
+        <pre><div class="codehead"><span>C#: EmployeeManager.cs (single file)</span><button class="copybtn" data-copy="cs_mini">Copy</button></div><code id="cs_mini">using Microsoft.Data.SqlClient;
+using System.Data;
+
+class EmployeeManager
+{
+    static string cs = "Server=localhost;Database=TrainingDB;Trusted_Connection=True;TrustServerCertificate=True;";
+
+    static void Main()
+    {
+        while (true)
+        {
+            Console.WriteLine("\\n=== Employee Manager ===");
+            Console.WriteLine("1) List employees");
+            Console.WriteLine("2) Add employee (Stored Procedure)");
+            Console.WriteLine("3) Count employees (Output)");
+            Console.WriteLine("0) Exit");
+            Console.Write("Choose: ");
+
+            string choice = Console.ReadLine() ?? "";
+            if (choice == "0") break;
+
+            if (choice == "1") ListEmployees();
+            else if (choice == "2") AddEmployeeSp();
+            else if (choice == "3") CountEmployeesSp();
+            else Console.WriteLine("Invalid option.");
+        }
+    }
+
+    static void ListEmployees()
+    {
+        string sql = "SELECT EmployeeId, FullName, Department, Salary FROM dbo.Employees ORDER BY EmployeeId";
+
+        using var con = new SqlConnection(cs);
+        using var cmd = new SqlCommand(sql, con);
+
+        con.Open();
+        using var r = cmd.ExecuteReader();
+
+        Console.WriteLine("\\nID | Name | Dept | Salary");
+        Console.WriteLine("-------------------------");
+
+        while (r.Read())
+        {
+            Console.WriteLine($"{r["EmployeeId"]} | {r["FullName"]} | {r["Department"]} | {r["Salary"]}");
+        }
+    }
+
+    static void AddEmployeeSp()
+    {
+        Console.Write("Name: "); string name = Console.ReadLine() ?? "";
+        Console.Write("Dept: "); string dept = Console.ReadLine() ?? "";
+        Console.Write("Salary: "); decimal salary = decimal.Parse(Console.ReadLine() ?? "0");
+
+        using var con = new SqlConnection(cs);
+        using var cmd = new SqlCommand("dbo.sp_AddEmployee", con);
+
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@FullName", name);
+        cmd.Parameters.AddWithValue("@Department", dept);
+        cmd.Parameters.AddWithValue("@Salary", salary);
+
+        var newIdParam = new SqlParameter("@NewEmployeeId", SqlDbType.Int)
+        {
+            Direction = ParameterDirection.Output
+        };
+        cmd.Parameters.Add(newIdParam);
+
+        con.Open();
+        cmd.ExecuteNonQuery();
+
+        int newId = (int)cmd.Parameters["@NewEmployeeId"].Value;
+        Console.WriteLine($"✅ Added employee. New ID = {newId}");
+    }
+
+    static void CountEmployeesSp()
+    {
+        using var con = new SqlConnection(cs);
+        using var cmd = new SqlCommand("dbo.sp_CountEmployees", con);
+
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        var totalParam = new SqlParameter("@Total", SqlDbType.Int)
+        {
+            Direction = ParameterDirection.Output
+        };
+        cmd.Parameters.Add(totalParam);
+
+        con.Open();
+        cmd.ExecuteNonQuery();
+
+        int total = (int)cmd.Parameters["@Total"].Value;
+        Console.WriteLine($"Total employees = {total}");
+    }
+}</code></pre>
+
+        <div class="callout ok">
+          <b>How to run this mini project</b>
+          <div class="muted">
+            1) Run the SQL script in section 4 → 2) Create a Console app → 3) Install NuGet package →
+            4) Paste code → 5) Run.
+          </div>
+        </div>
+      </section>
+
+      <section id="exercises" class="section card" style="margin-top:16px">
+        <h2>15) Practice exercises (Beginner → Advanced)</h2>
+
+        <h3>Beginner</h3>
+        <ol class="muted">
+          <li>Write a program to print all employees sorted by salary.</li>
+          <li>Search employees by department using a parameterized query.</li>
+          <li>Insert 3 employees using <span class="inline">ExecuteNonQuery()</span>.</li>
+          <li>Count employees using <span class="inline">ExecuteScalar()</span>.</li>
+        </ol>
+
+        <h3>Intermediate</h3>
+        <ol class="muted">
+          <li>Create a stored procedure <span class="inline">sp_DeleteEmployee</span> and call it from C#.</li>
+          <li>Load employees into a <span class="inline">DataTable</span> and filter (only IT department) in C#.</li>
+          <li>Add validation: salary must be &gt; 0, name must not be empty.</li>
+        </ol>
+
+        <h3>Advanced</h3>
+        <ol class="muted">
+          <li>Wrap “Add employee + Update HR salary” in one transaction and test rollback on error.</li>
+          <li>Create async methods for list + add and measure responsiveness.</li>
+          <li>Create a repository class: <span class="inline">EmployeeRepository</span> with methods:
+            GetAll, GetById, AddViaSp, UpdateSalaryViaSp, CountViaSp.</li>
+        </ol>
+      </section>
+
+      <section id="faq" class="section card" style="margin-top:16px">
+        <h2>16) FAQ & troubleshooting</h2>
+
+        <div class="callout warn">
+          <b>Login failed for user</b>
+          <div class="muted">
+            If using Windows Authentication, ensure <span class="inline">Trusted_Connection=True</span>.
+            If using SQL login, confirm username/password and server settings.
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <b>Cannot open database requested by the login</b>
+          <div class="muted">
+            Ensure <span class="inline">TrainingDB</span> exists and you ran the SQL script.
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <b>SSL Provider / certificate error</b>
+          <div class="muted">
+            Add <span class="inline">TrustServerCertificate=True</span> to the connection string for local development.
+          </div>
+        </div>
+
+        <div class="callout ok">
+          <b>Why is “Open/Close connection each time” OK?</b>
+          <div class="muted">
+            ADO.NET uses <b>connection pooling</b>. Opening/closing does not always create a new physical connection;
+            it often reuses existing pooled connections safely.
+          </div>
+        </div>
+      </section>
+
+      <div class="footer">
+        Built as a single-page HTML learning module (diagrams included as SVG images).
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Copy buttons
+    document.querySelectorAll(".copybtn").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const id = btn.getAttribute("data-copy");
+        const el = document.getElementById(id);
+        if(!el) return;
+        const text = el.innerText;
+        try{
+          await navigator.clipboard.writeText(text);
+          const old = btn.textContent;
+          btn.textContent = "Copied ✅";
+          setTimeout(()=>btn.textContent=old, 900);
+        }catch{
+          alert("Copy failed. Select text manually and copy.");
+        }
+      });
+    });
+
+    // Scroll spy
+    const nav = document.getElementById("nav");
+    const links = Array.from(nav.querySelectorAll("a"));
+    const sections = links.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+
+    const obs = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          links.forEach(l=>l.classList.remove("active"));
+          const id = "#" + e.target.id;
+          const link = links.find(l=>l.getAttribute("href")===id);
+          if(link) link.classList.add("active");
+        }
+      });
+    }, {rootMargin:"-60% 0px -35% 0px", threshold: 0.01});
+
+    sections.forEach(s=>obs.observe(s));
+
+    // Search (Ctrl+K) + filter nav
+    const searchBox = document.getElementById("searchBox");
+    function filterNav(q){
+      q = (q||"").trim().toLowerCase();
+      links.forEach(a=>{
+        const text = (a.innerText||"").toLowerCase();
+        a.style.display = text.includes(q) ? "block" : "none";
+      });
+    }
+    searchBox.addEventListener("input", ()=>filterNav(searchBox.value));
+    window.addEventListener("keydown", (e)=>{
+      if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){
+        e.preventDefault();
+        searchBox.focus();
+      }
+    });
+  </script>
+</body>
+</html>
